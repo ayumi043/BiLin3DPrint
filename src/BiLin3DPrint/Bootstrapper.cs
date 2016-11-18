@@ -45,14 +45,13 @@ namespace Bilin3d {
             // Razor
             container.Register<IViewEngine, Nancy.ViewEngines.Razor.RazorViewEngine>();
             container.Register<Nancy.ViewEngines.Razor.IRazorConfiguration, Nancy.ViewEngines.Razor.DefaultRazorConfiguration>();
-
-
+            
             // log4net
             FileInfo log4NetConfig = new FileInfo(System.IO.Directory.GetCurrentDirectory() + "\\log4net.config");
             log4net.Config.XmlConfigurator.ConfigureAndWatch(log4NetConfig);
             container.Register(typeof(ILog), (c, o) => LogManager.GetLogger(typeof(Bootstrapper)));
 
-            
+            // db
             var constr = Startup.Configuration.GetConnectionString("mysql");
             var dbFactory = new OrmLiteConnectionFactory(
                 constr, //Connection String
@@ -61,9 +60,10 @@ namespace Bilin3d {
         }
 
         protected override IEnumerable<Type> ViewEngines {
-            get { return new[] { typeof(Nancy.ViewEngines.Razor.RazorViewEngine) }; }
+            get {
+                return new[] { typeof(Nancy.ViewEngines.Razor.RazorViewEngine) };
+            }
         }
-
 
         // 每次请求都会触发,一个页面会触发多次
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) {
@@ -81,11 +81,9 @@ namespace Bilin3d {
             container.Register<IUserMapper, UserMapper>();
         }
 
-
         // 只在启动时触发1次
         protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines) {
-            base.ApplicationStartup(container, pipelines);        
-
+            base.ApplicationStartup(container, pipelines);      
         }
 
         // 每次请求都会触发,一个页面会触发多次
