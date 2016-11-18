@@ -27,13 +27,16 @@ namespace Bilin3d {
             //StaticConfiguration.DisableErrorTraces = false;
 
             conventions.StaticContentsConventions.Add(
-                StaticContentConventionBuilder.AddDirectory("assets", @"assets")
-            ); 
+                StaticContentConventionBuilder.AddDirectory("assets", @"public/assets")
+            );  
             conventions.StaticContentsConventions.Add(
-                StaticContentConventionBuilder.AddDirectory("public", @"public")
+                StaticContentConventionBuilder.AddDirectory("resource", @"public/resource")
             );
+            //conventions.StaticContentsConventions.Add(
+            //     StaticContentConventionBuilder.AddDirectory("public", @"public")
+            //);
             conventions.StaticContentsConventions.Add(
-                StaticContentConventionBuilder.AddDirectory("resource", @"resource")
+                StaticContentConventionBuilder.AddDirectory("", @"public")
             );
         }
       
