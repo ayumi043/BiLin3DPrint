@@ -307,4 +307,6 @@ $RECYCLE.BIN/
 doc/ 
 src/BiLin3DPrint/log-file.txt
 src/BiLin3DPrint/log.*
-src/BiLin3DPrint/Content
+src/BiLin3DPrint/Content/uploads/3d
+src/BiLin3DPrint/Content/uploads/avatars
+src/BiLin3DPrint/Content/uploads/temp
