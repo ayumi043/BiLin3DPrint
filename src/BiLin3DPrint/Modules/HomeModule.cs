@@ -134,13 +134,10 @@ namespace Bilin3d.Modules {
                 return View["Crm/order", base.Model];
             };
 
-            Get["/MP_verify_TDETj8nUoOHLCnHe.txt"] = parameters => {
-                return Response.AsText(System.IO.File.ReadAllText(pathProvider.GetRootPath() + "MP_verify_TDETj8nUoOHLCnHe.txt"));
-            };
-
-            Get["/crm/success/MP_verify_TDETj8nUoOHLCnHe.txt"] = parameters => {
-                return Response.AsText(System.IO.File.ReadAllText(pathProvider.GetRootPath() + "MP_verify_TDETj8nUoOHLCnHe.txt"));
-            };
+            //Get["/MP_verify_TDETj8nUoOHLCnHe.txt"] = parameters => {
+            //    return Response.AsText(System.IO.File.ReadAllText(pathProvider.GetRootPath() + "MP_verify_TDETj8nUoOHLCnHe.txt"));
+            //};
+                        
         }
     }
 }
