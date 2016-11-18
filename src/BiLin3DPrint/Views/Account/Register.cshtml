@@ -1,0 +1,151 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+} 
+
+@section BreadCrumbs {
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">注册</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li class="active">注册</li>
+            </ul>
+        </div><!--/container-->
+    </div>
+}
+
+@section Javascript {
+    <script>
+        $(function () {
+            $("#submit").click(function () {
+                var reg = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+                var $email = $("#email").val();
+                var $password = $("#password").val();
+                var $repassword = $("#repassword").val();               
+                if (!reg.test($email)) {
+                    $("#errormessage").html("<p>email填写不正确！</p>")
+                    $("#email").focus();
+                    $("#error").show();
+                    return false;
+                }
+                if ($password.length < 6) {
+                    $("#errormessage").html("<p>密码填写不正确，不能少于6个字符！</p>")
+                    $("#password").focus();
+                    $("#error").show();
+                    return false;
+                }
+                if ($password != $repassword) {
+                    $("#errormessage").html("<p>两次密码填写不一致！</p>")
+                    $("#password").focus();
+                    $("#error").show();
+                    return false;
+                }
+
+                if ($("#chk").prop("checked") == false) {
+                    $("#errormessage").html("<p>请同意服务条款！</p>")                   
+                    $("#error").show();
+                    return false;
+                }
+
+            });
+        });
+    </script>
+}
+
+<div class="row errormessage">
+    <div class="alert alert-danger alert-dismissible fade in" role="alert" id="error" @if (Model.Page.Errors.Count == 0) { <text> style="display:none;" </text>  }>
+        <h4>请认真填写信息!</h4>
+        <div id="errormessage">
+            @foreach (var item in Model.Page.Errors) {
+                <p>@item.ErrorMessage</p>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row margin-bottom-60">
+    <div class="col-sm-6">
+        <!-- Owl Carousel v5 -->
+        <div class="owl-carousel-v5">
+            <div class="owl-item" style="width: 570px;">
+                <div class="item">
+                    <img class="full-width img-responsive" src="/assets/img/main/img12.jpg" alt="">
+                </div>
+            </div>
+        </div>
+        <!-- End Owl Carousel v5 -->
+    </div>
+    <div class="col-md-6">
+        @*@Html.ValidationSummary((List<Bilin3d.Models.ErrorModel>)Model.Page.Errors)*@
+        <form class="reg-page" method="post">
+
+            <div class="reg-header">
+                <h2>注册新用户</h2>
+                <p>已有帐号? 点击 <a href="/account/logon" class="color-green">登录</a></p>
+            </div>
+
+            <label>电子邮箱 <span class="color-red">*</span></label>
+            <input class="form-control margin-bottom-20" type="text" id="email" name="Email" value="@Model.RegisterModel.Email" />
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <label>密码 <span class="color-red">*</span></label>
+                    <input class="form-control margin-bottom-20" type="password" id="password" name="Password" value="@Model.RegisterModel.Password" />
+                </div>
+                <div class="col-sm-6">
+                    <label>请确认密码 <span class="color-red">*</span></label>
+                    <input class="form-control margin-bottom-20" type="password" id="repassword" name="ConfirmPassword" value="@Model.RegisterModel.ConfirmPassword" />
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-lg-6 checkbox">
+                    <label>
+                        <input type="checkbox" id="chk">
+                        我已阅读并同意 <a href="#" class="color-green" data-toggle="modal" data-target="#myModal">《用户注册协议》</a>
+                    </label>
+                    <div style="display: none;" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                                    <h4 id="myModalLabel1" class="modal-title">《用户注册协议》</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h5>京东用户注册协议</h5>
+                                    <p>本协议是您与京东网站（简称"本站"，网址：www.jd.com）所有者（以下简称为"京东"）之间就京东网站服务等相关事宜所订立的契约，请您仔细阅读本注册协议，您点击"同意并继续"按钮后，本协议即构成对双方有约束力的法律文件。</p>
+                                    <h5>第1条 本站服务条款的确认和接纳</h5>
+                                    <p>
+                                        1.1本站的各项电子服务的所有权和运作权归京东所有。用户同意所有注册协议条款并完成注册程序，才能成为本站的正式用户。用户确认：本协议条款是处理双方权利义务的契约，始终有效，法律另有强制性规定或双方另有特别约定的，依其规定。
+                                    </p>
+                                    <p>
+                                        1.2用户点击同意本协议的，即视为用户确认自己具有享受本站服务、下单购物等相应的权利能力和行为能力，能够独立承担法律责任。
+                                    </p>
+                                    <p>
+                                        1.3如果您在18周岁以下，您只能在父母或监护人的监护参与下才能使用本站。
+                                    </p>
+                                    <p>
+                                        1.4京东保留在中华人民共和国大陆地区法施行之法律允许的范围内独自决定拒绝服务、关闭用户账户、清除或编辑内容或取消订单的权利。
+                                    </p>
+                                    <h5>第2条 本站服务</h5>
+                                </div>
+                                <div class="modal-footer">
+                                    <button data-dismiss="modal" class="btn-u" type="button">同意并继续</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn-u" id="submit" type="submit">注册</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

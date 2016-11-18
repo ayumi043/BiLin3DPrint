@@ -1,0 +1,116 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section BreadCrumbs {
+    <div class="breadcrumbs">
+        <div class="container">
+            <h3 class="pull-left">个人信息</h3>
+            <ul class="pull-right breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li class="active">个人信息</li>
+            </ul>
+        </div><!--/container-->
+    </div>
+}
+
+@section Acount {
+    @Html.Partial("_Acount.cshtml")
+}
+
+@section Javascript{
+<link href="/assets/js/plugins/fileupload/jquery.fileupload.css" rel="stylesheet" />
+<script src="/assets/js/plugins/fileupload/jquery.ui.widget.js"></script>
+<script src="/assets/js/plugins/fileupload/jquery.iframe-transport.js"></script>
+<script src="/assets/js/plugins/fileupload/jquery.fileupload.js"></script>
+    <script>
+        $(function () {
+            $('#fileupload').fileupload({
+                dataType: 'json',
+                autoUpload: true,
+                singleFileUploads: true,
+                maxFileSize: 5000000, //10000000  10MB                
+                success: function (data) {
+                    $("#tou").attr("src", "/Content/uploads/avatars/" + data.filename);
+                    $("#Avatars").val(data.filename);
+                },
+                error: function (e, data) {
+                    alert("发生错误了" + (JSON.parse(e.responseText))[0].errorMessage);
+                }
+            });
+            $("#submit").click(function () {
+                $("#message").hide();
+                $.ajax({
+                    url: '/account/info',
+                    data: $("form").serialize(),
+                    type: 'POST',
+                    success: function (data) {
+                        //window.location = "/account/checkout";
+                        $("#message").show().delay(10000).fadeOut();
+                        return;
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            alert("保存失败了");
+                        }                      
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<div class="row reg-page" style="padding:0px !important;margin:0px !important;">
+
+    <h4 style="padding:20px 0px 0px 25px;">修改个人信息</h4>
+    <hr>
+
+    <div class="col-sm-5">
+        <div class="form-horizontal" method="post">
+            <div class="alert alert-success" role="alert" id="message" style="display:none;">修改成功</div>
+            <form>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">头像</label>
+                    <div class="col-sm-7">
+                        <span class="fileinput-button">
+                            <img id="tou" src="~/Content/uploads/avatars/@Model.User.Avatars" style="width:120px;height:120px;" />
+                            <input id="fileupload" type="file" name="file[file]" data-url="/account/info/uploadimg" />
+                        </span>
+                        <input type="hidden" class="form-control" id="Avatars" name="avatars" value="@Model.User.Avatars" placeholder="头像">
+                        <span class="text-danger">头像不能大于512KB</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                    <div class="col-sm-7">
+                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" value="@Model.User.Email" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">昵称</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="nickname" name="nickname" value="@Model.User.NickName" placeholder="昵称">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">电话</label>
+                    <div class="col-sm-7">
+                        <input type="text" class="form-control" id="tel" name="tel" value="@Model.User.Tel" placeholder="电话">
+                    </div>
+                </div>
+            </form>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button class="btn-u pull-left" id="submit" type="submit">保存</button>
+                </div>
+            </div>          
+          
+        </div>
+    </div>
+</div>

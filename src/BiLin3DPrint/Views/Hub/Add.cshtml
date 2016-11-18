@@ -1,0 +1,197 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section Javascript{
+    <script>
+        $(function() {
+            $(".seltype").click(function() {
+                var index = $(".seltype").index(this);
+                $(".type-panne").hide().eq(index).show();
+            });
+            $(".type-panne").hide().eq($(".seltype").index($(".seltype:checked"))).show();
+        });
+    </script>
+}
+
+<style>
+    .content{
+        padding-top:20px;
+    }
+
+    .list-group > li.active, .list-group > li.active:hover {
+        background: none;
+    }
+    .list-group > li > a:hover,
+    .list-group > li.active > a {
+        color: #72c02c !important;
+        font-weight:bold;
+    }
+
+    .list-group li a {
+        color: #666;
+        font-size: 14px;
+        padding: 12px 10px;
+    }
+
+    .list-group .active > a,
+    .list-group li > a:focus,
+    .list-group li > a:hover {
+        filter: none !important;
+        color: #72c02c !important;
+        background: inherit !important;
+    }
+    #company {
+        display: none;
+    }
+</style>
+
+
+<div class="row">
+    <!-- 左边菜单-->
+    @Html.Partial("_Hub.cshtml")
+    <!-- 左边菜单 -->
+    
+    <!-- Begin Content -->
+    <div class="col-md-9">
+        <div class="tag-box tag-box-v3 form-page">
+            <div class="headline">
+                <h3>加入HUB</h3>
+            </div>
+            <p>加入3D HUB通过打印本地订单赚钱</p>
+            <div class="margin-bottom-10"></div>
+            <button type="submit" class="btn-u center">开始创建HUB</button>
+        </div>
+
+        <div class="row errormessage">
+            <div class="alert alert-danger alert-dismissible fade in" role="alert" id="error" @if (Model.Page.Errors.Count == 0) { <text> style="display:none;" </text>   }>
+                <h4>请认真填写信息!</h4>
+                <div id="errormessage">
+                    @foreach (var item in Model.Page.Errors) {
+                        <p>@item.ErrorMessage</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="tag-box tag-box-v3 form-page">
+            <div class="headline"><h3>HUB详细信息</h3></div>
+            <h4>开始你的HUB之前</h4>
+            <p>你需要完成以下信息的填写才能加入HUB.</p><br>
+            <form class="form-horizontal" action="/hub/add" enctype="multipart/form-data" method="post">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">HUB名称：</label>
+                    <div class="col-lg-5">
+                        <input type="text" class="form-control" name="Fname" id="fname" value="@Model.SupplierModel.Fname" placeholder="名称">
+                    </div>
+                </div> 
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">qq：</label>
+                    <div class="col-lg-5">
+                        <input type="text" class="form-control" id="qq" name="QQ" value="@Model.SupplierModel.QQ" placeholder="QQ">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">地址：</label>
+                    <div class="col-lg-5">
+                        <input type="text" class="form-control" id="address" name="Address" value="@Model.SupplierModel.Address" placeholder="地址">请认真填写详细地址，通过判断距离，让附近的客户更容易找到你
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">logo：</label>
+                    <div class="col-lg-5">
+                        <input type="file" class="form-control" name="Logo" id="logo" placeholder="logo">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">电话：</label>
+                    <div class="col-lg-5">
+                        <input type="text" class="form-control" id="tel" name="Tel" value="@Model.SupplierModel.Tel" placeholder="电话">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">物流政策：</label>
+                    <div class="col-lg-5">
+                        <select id="expressid" name="ExpressId">
+                            @foreach (var item in Model.Expresses) {
+                                <option value="@item.ExpressId" @if (item.ExpressId == Model.SupplierModel.ExpressId) {<text>selected="selected"</text>}>@item.Fname</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-offset-2 col-lg-10">
+                        <div class="checkbox">
+                            <label class="margin-right-10">
+                                <input type="radio" class="seltype" value="0" name="ftype" @if (Model.SupplierModel.Ftype == "0") {<text>checked="checked"</text>}>个人
+                            </label>
+                            <label>
+                                <input type="radio" class="seltype" value="1" name="ftype" @if (Model.SupplierModel.Ftype == "1") {<text>checked="checked"</text>}> 企业
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="type-panne" id="person">
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">身份证号码：</label>
+                        <div class="col-lg-5">
+                            <input type="text" class="form-control" name="IdCard" id="idcar" value="" placeholder="身份证号码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">身份证扫描件(正面)：</label>
+                        <div class="col-lg-5">
+                            <input type="file" class="form-control" name="IdCarPic1" id="idcarpic1" placeholder="身份证扫描件(正面)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">身份证扫描件(反面)：</label>
+                        <div class="col-lg-5">
+                            <input type="file" class="form-control" name="IdCarPic2" id="idcarpic2" placeholder="身份证扫描件(反面)">
+                        </div>
+                    </div>
+                </div>
+                <div class="type-panne" id="company">
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">企业名称：</label>
+                        <div class="col-lg-5">
+                            <input type="text" class="form-control" name="CompanyName" id="companyname" value="" placeholder="企业名称">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">注册资本：</label>
+                        <div class="col-lg-5">
+                            <input type="text" class="form-control" name="Capital" id="Capital" value="" placeholder="注册资本">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">统一代码：</label>
+                        <div class="col-lg-5">
+                            <input type="text" class="form-control" name="Fcode" id="Fcode" value="" placeholder="统一代码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-2 control-label">营业执照扫描：</label>
+                        <div class="col-lg-5">
+                            <input type="file" class="form-control" name="BlicensePic" id="BlicensePic" placeholder="营业执照扫描">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-lg-offset-2 col-lg-10">
+                        <button type="submit" class="btn-u">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <!-- End Content -->
+</div>

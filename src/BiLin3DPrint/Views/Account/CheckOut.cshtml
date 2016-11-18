@@ -1,0 +1,385 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section Javascript {
+    <link rel="stylesheet" href="/assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css">
+    <link rel="stylesheet" href="/assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css">
+    <script src="/assets/js/plugins/cityselect/jquery.cityselect.js"></script>
+    <script>
+        $(function () {
+            $("#city").citySelect({ nodata: "none", required: false });
+            $("body").on("click", "#addresslist input", function () {
+                var price = 0;
+                if ($(this).parents(".radio").html().indexOf("福建") >= 0) {                    
+                    price = 13;
+                } else {
+                    price = 22;                    
+                }
+                $("#kd").html(price)
+                $("#orderprice").html(
+                    parseFloat(price) + parseFloat($("#caramount").html())
+                );
+
+                $(".radio-address").attr("checked", false);
+                $("#new-address-btn").attr("checked", false);
+                $(this).attr("checked", true);
+
+                $(".addresslist .radio").removeClass("select-address");
+                $(this).parents(".radio").addClass("select-address");
+
+                $("#addressform").hide();
+            });
+            $("#new-address-btn").click(function () {
+                $(".radio-address").attr("checked", false);
+                $(".addresslist .radio").removeClass("select-address");
+                $(this).parents(".radio").addClass("select-address");
+                $("#addressform").show();
+            });
+            $("#state").click(function () {
+                if ($(this).is(':checked')) {
+                    $(this).val("1");
+                } else {
+                    $(this).val("0");
+                }
+            });
+            $("#address-new").click(function () {
+                var company = $(".company").val();
+                var consignee = $(".consignee").val();
+                var province = $(".province").val();
+                var city = $(".city").val();
+                var dist = $(".dist").val();
+                var address = $(".address").val();
+                var tel = $(".tel").val();
+                var state = $("#state").val();
+                $.ajax({
+                    url: '/account/address/add',
+                    data: {
+                        Company: company,
+                        Consignee: consignee,
+                        Province: province,
+                        City: city,
+                        Dist: dist,
+                        Address: address,
+                        Tel: tel,
+                        State:state
+                    },
+                    type: 'post',
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        //alert("成功！");
+                        $("#addressform").hide();
+                        $(".radio-address").attr("checked", false);
+
+                        var str = "<label class='radio select-address'>" +
+                                  "<input type='radio' checked='checked' class='radio-address' value='" + data.id + "' name='addressid'>" +
+                                  "<i class='rounded-x'></i>" +
+                                  "<span> 收货人：" + data.consignee + "</span>&nbsp;&nbsp;<span>地址：" +
+                                  data.province + data.city + data.dist + "&nbsp;&nbsp;" + data.address +
+                                  "</span>&nbsp;&nbsp;<span>手机号码：" + data.tel + "</span>" +
+                                  "</label>";
+                        $("#addresslist").append(str);
+                        $("#new-address-btn").attr("checked", false);
+                        $("#new-address-btn").parents(".radio").removeClass("select-address");
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            //alert("失败了");
+                        }
+                        var str = "";
+                        $.each(JSON.parse(data.responseText), function (index, item) {
+                            str += "<p>" + item["errorMessage"] + "</p>"
+                        });
+                        $("#error").show();
+                        $("#errormessage").html(str);
+                    }
+                });
+            });
+            $("#orderbtn").click(function () {
+                var addressid = $("input[name='addressid']:checked").val();
+                var payid = $("input[name='payid']:checked").val();
+                var remark = $("#remark").val();               
+                $.ajax({
+                    url: '/account/order',
+                    data: {
+                        addressid: addressid,
+                        payid: payid,
+                        remark: remark                        
+                    },
+                    type: 'post',
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        //alert("成功！");  
+                        if (data.message == "success") {
+                            window.location = "/account/order";
+                        }                       
+                        return;
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            //alert("失败了");
+                        }
+                        var str = "";
+                        $.each(JSON.parse(data.responseText), function (index, item) {
+                            str += "<p>" + item["errorMessage"] + "</p>"
+                        });
+                        alert(str);
+                        //$("#error").show();
+                        //$("#errormessage").html(str);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@section BreadCrumbs {
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">结账</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li class="active">结账</li>
+            </ul>
+        </div><!--/container-->
+    </div>
+}
+
+
+
+
+<div class="row">
+
+    <form action="#" id="sky-form" class="sky-form" novalidate="novalidate">
+        <header>填写并核对订单信息</header>
+
+        <fieldset>
+            <h4>收货人信息 
+                @*<span class="active" id="edit">（修改）</span>*@ 
+            </h4>
+            <div class="row bg-gray">
+
+                <div class="addresslist">
+                    <div id="addresslist">
+                        @{decimal kd = 22; string selected = "";}
+                        @foreach (var item in Model.Addresses) {
+                            @{  
+                                selected = "";
+                                if (item.State == "1") {
+                                    selected = "select-address";
+                                    if (item.Province.Contains("福建")) {
+                                        kd = 13;
+                                    }
+                                } 
+                             }
+                            <label class="radio @selected">
+                                <input type="radio" @if (item.State == "1") { <text> checked</text> } class="radio-address" name="addressid" value="@item.Id">
+                                <i class="rounded-x"></i>
+                                <span> 收货人：@item.Consignee</span>&nbsp;&nbsp;<span>地址：@item.Province  @item.City  @item.Dist  @item.Address</span>&nbsp;&nbsp;<span>手机号码：@item.Tel</span>
+                            </label>
+                        }
+                    </div>
+                    <label class="radio"><input type="radio" id="new-address-btn" @if (Model.Addresses.Count == 0) { <text> checked="" </text>   }><i class="rounded-x"></i>使用新地址</label>
+                </div>
+
+            </div>
+
+            <div id="addressform" @if(Model.Addresses.Count > 0) { <text>style="display:none;"</text> }>
+                <div class="row">
+
+                    <label class="label col col-1">公司名称：</label>
+                    <section class="col col-6">
+                        <label class="input">
+                            <input type="text" class="company" name="company" placeholder="公司名称">
+                        </label>
+                    </section>
+                </div>
+                <div class="row">
+
+                    <label class="label col col-1"><span class="span-error">*</span>收货人：</label>
+                    <section class="col col-6">
+                        <label class="input">
+                            <input type="text" class="consignee" name="consignee" placeholder="收货人">
+                        </label>
+                    </section>
+                </div>
+                <div class="row" id="city">
+                    <label class="label col col-1"><span class="span-error">*</span>所在地区：</label>
+                    <section class="col col-3">
+                        <label class="select">
+                            <select class="prov province"></select>
+                            <i></i>
+                        </label>
+                    </section>
+
+                    <section class="col col-3">
+                        <label class="select">
+                            <select class="city" disabled="disabled"></select>
+                            <i></i>
+                        </label>
+                    </section>
+
+                    <section class="col col-3">
+                        <label class="select">
+                            <select class="dist" disabled="disabled"></select>
+                            <i></i>
+                        </label>
+                    </section>
+                </div>
+
+                <div class="row">
+
+                    <label class="label col col-1"><span class="span-error">*</span>详细地址：</label>
+                    <section class="col col-9">
+                        <label class="input">
+                            <input type="text" class="address" placeholder="详细地址">
+                        </label>
+                    </section>
+                </div>
+
+                <div class="row">
+
+                    <label class="label col col-1"><span class="span-error">*</span>手机号码：</label>
+                    <section class="col col-3">
+                        <label class="input">
+                            <input type="text" class="tel" placeholder="手机号码">   
+                        </label>
+                    </section>
+                </div>
+
+                <div class="alert alert-danger alert-dismissible fade in" role="alert" id="error" style="display:none;">
+                    <h4>请认真填写信息!</h4>
+                    <div id="errormessage"></div>
+                </div>
+
+                <div class="row">
+                    
+                    <label class="label col col-1"></label>
+                    <div class="col col-5">
+                        默认地址：<input type="checkbox" id="state" name="State" value="0" />
+                        &nbsp;&nbsp;<button type="button" class="btn-u" id="address-new">保存收货人信息</button></div>
+                </div>   
+            </div>
+                    
+        </fieldset>
+
+        <fieldset>
+            <h4>
+                支付方式               
+            </h4>
+            <div class="row bg-gray">
+
+                <div>
+                    <div>
+                       
+                            <label class="radio">
+                                <input type="radio" checked name="payid" value="1">
+                                <i class="rounded-x"></i>
+                                <span> 支付宝</span>
+                            </label>
+                       
+                    </div>
+                </div>
+
+            </div>     
+
+        </fieldset>
+
+        <fieldset>
+            <div class="row">
+                <h5>订单备注</h5>
+                <section>
+                    <label class="textarea">
+                        <textarea rows="3" id="remark" name="remark" placeholder="订单备注"></textarea>
+                    </label>
+                </section>
+            </div>
+        </fieldset>
+
+        @*<footer>
+            <button type="submit" class="btn-u">保持收货人信息</button>
+        </footer>*@
+    </form>
+
+
+    <table class="table text-center table-bordered" id="checkcartable1">
+        <tr>
+            <td colspan="5" style="vertical-align:middle;">
+                <div class="pull-right" style="padding: 12px 20px 0px 0px;">
+                    <a style="font-size:16px;" href="/account/checkcar">返回购物车修改</a>
+                </div><h3>商品清单</h3>
+            </td>
+        </tr>
+        <tr class="active checkcar1">
+            <td class="col-md-3">商品</td>
+            <td>规格</td>
+            <td>单价</td>
+            <td>数量</td>
+            <td>合计</td>
+        </tr>
+        @if (Model.Cars.Count > 0) {
+            @foreach (var item in Model.Cars) {
+                <tr class="cartr carli">
+                    @{ var filename = item.FileName.Split('$');}
+                    <td class="td">
+                        <input type="hidden" class="" value="@item.CarId" />
+                        <ul>
+                            <li><a target="_blank" href="~/Content/uploads/3d/@item.FileName" download="@filename[filename.Length - 1]">@filename[filename.Length - 1]</a></li>
+                            <li>材料：@item.MatDensity</li>
+                            <li>颜色: @item.MatColor</li>
+                            <li>精度: @item.Accuracy</li>
+                            <li>交货周期：@item.Delivery</li>
+                        </ul>
+                    </td>
+                    <td class="td">
+                        <ul class="gui">
+                            <li>尺寸：@item.Size</li>
+                            <li>表面积: @item.Area</li>
+                            <li>体积: @item.Volume</li>
+                            <li>重量: @item.Weight</li>
+                        </ul>
+                    </td>
+                    <td>￥@item.Price</td>
+                    <td>@item.Num</td>
+                    <td class="AmountDetail" style="font-size:16px;">
+                        ￥<span class="amount-detail">@item.AmountDetail</span>元
+                        <div style="font-size:12px;color:#999;">单次最低价格:￥@item.Price1</div>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="6" style="text-align:left;padding:28px 35px 20px 35px;">
+                    <p>注意：当您的订单中包含多件商品时，发货时间将以最晚出货的产品为准。</p>
+                    <p>如有特殊需求，请在订单备注里说明，或者拨打+86-595 28869023与在线客服联系。</p>
+                    <div class="pull-right block">
+                        <h4>商品总额 : ￥<span id="caramount">@Model.Cars[0].Amount</span> 元</h4>
+                        <div><h4>快递费 : ￥<span id="kd">@kd</span> 元</h4>(快递省内13，省外22)</div>
+                        @{
+                            //快递省内13，省外22
+                            var orderprice = Model.Cars[0].Amount + kd;
+                         }
+                        <h3 style="color:red;">应付款 : ￥<span id="orderprice">@orderprice</span> 元</h3>
+                        <div><h1> <button type="button" id="orderbtn" class="btn-u" style="width:180px;font-size:18px;">立即下单</button>  </h1></div>
+                    </div>
+
+
+                </td>
+            </tr>
+
+
+        } else {
+            <tr>
+                <td colspan="6"><h1>您的购物车内没有商品！</h1></td>
+            </tr>
+        }
+
+
+    </table>
+</div>

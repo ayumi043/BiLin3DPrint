@@ -1,0 +1,274 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+
+<!DOCTYPE html>
+<!--[if IE 8]> <html class="ie8"> <![endif]-->
+<!--[if IE 9]> <html class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html>
+<!--<![endif]-->
+<head>
+    <title>@Model.Page.PreFixTitle @Model.Page.Title</title>
+
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="" />
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Favicon -->
+    @*<link rel="shortcut icon" href="favicon.ico">*@
+
+    <!-- Web Fonts -->
+    @*<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin">*@
+
+    <!-- CSS Global Compulsory -->
+    <link rel="stylesheet" href="/assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+
+    <!-- CSS Header and Footer -->
+    <link rel="stylesheet" href="/assets/css/headers/header-default.css">
+    <link rel="stylesheet" href="/assets/css/footers/footer-v2.css">
+
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="/assets/plugins/animate.css">
+    <link rel="stylesheet" href="/assets/plugins/line-icons/line-icons.css">
+    <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.min.css">
+
+    <!-- CSS Page Style -->
+    <link rel="stylesheet" href="/assets/css/pages/page_log_reg_v1.css">
+
+    <!-- CSS Theme -->
+    <link rel="stylesheet" href="/assets/css/theme-colors/default.css" id="style_color">
+    <link rel="stylesheet" href="/assets/css/theme-skins/dark.css">
+
+    <!-- CSS Customization -->
+    <link rel="stylesheet" href="/assets/css/custom.css">
+    @RenderSection("Css", required: false)
+</head>
+
+
+<body>
+
+    <div class="wrapper">
+        <!--=== Header ===-->
+        <div class="header">
+            <div class="container">
+                <!-- Logo -->
+                <a class="logo" href="/">
+                    <img src="/assets/img/logo1-default.png" alt="Logo">
+                </a>
+                <!-- End Logo -->
+                <!-- Topbar -->
+                <div class="topbar">
+                    <ul class="loginbar pull-right">
+                        @if (Model.Page.IsAuthenticated) {
+                            <text>
+                            <li class="active">
+                               HI, <b>@Model.Page.CurrentUser</b>
+                            </li>
+                            <li class="topbar-devider"></li>
+                            <li>
+                                <a href="/order">我的订单</a>
+                            </li>
+                            <li class="topbar-devider"></li>
+                            <li>
+                                <a href="/account/logoff">退出</a>
+                            </li>
+                            </text>
+                        } else {
+                            <text>
+                            <li><a href="/account/register">注册</a></li>
+                            <li class="topbar-devider"></li>
+                            <li><a href="/account/logon">登陆</a></li>
+                            <li class="topbar-devider"></li>
+                            <li>
+                                <a href="/order">我的订单</a>
+                            </li>
+                            </text>
+                        }
+                            <li class="topbar-devider"></li>
+                            @if (Model.Page.IsSupplier) {
+                            <text>
+                            <li><a href="/hub/add">供应商后台</a></li>
+                            </text>
+                            } else {
+                            <li><a href="/hub/add">成为供应商</a></li>
+                            }                            
+                            <li class="topbar-devider"></li>
+                            <li><a href="/hub/printer">我的打印机</a></li>
+                    </ul>
+                </div>
+                <!-- End Topbar -->
+                <!-- Toggle get grouped for better mobile display -->
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="fa fa-bars"></span>
+                </button>
+                <!-- End Toggle -->
+            </div><!--/end container-->
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse mega-menu navbar-responsive-collapse">
+                <div class="container">
+                    <ul class="nav navbar-nav">
+                        <!-- Home -->
+                        <li @if (Request.Path.ToLower().Contains("print")) { <text> class="active" </text>  }>
+                            <a href="/print">
+                                3D模型上传及报价
+                            </a>
+                        </li>
+                        <!-- End Home -->
+                        <!-- Pages -->
+                        <li @if (Request.Path.ToLower().Contains("faq")) { <text> class="active" </text>  }>
+                            <a href="/faq">
+                                使用说明
+                            </a>
+                        </li>
+                        <!-- End Pages -->
+                        <!-- Blog -->
+                        <li @if (Request.Path.ToLower().Contains("wiki")) { <text> class="active" </text> }>
+                            <a href="/wiki">
+                                知识教育
+                            </a>
+                        </li>
+
+                        <!-- End Blog -->
+                        <!-- Misc Pages -->
+                        <li class="dropdown car">                            
+                            <div class="btn-u pull-right shopcar">
+                                <span aria-hidden="true" class="icon-basket"></span>
+                                <a class="goshopcar" href="/car">
+                                    <span id="shopcar">&nbsp;<span class="totalnum">0</span>个商品 - ￥<span class="totalprice">0</span>元</span>
+                                </a>
+                            </div>                            
+                            <div class="dropdown-menu pull-right" >
+                                <ul id="shopcar-list">
+                                    @*<li><a href="#">商品1</a></li>*@
+                                </ul>
+                                <a href="/car"><button class="btn btn-u btn-block" id="gocheck">去购物车结算</button></a>
+                            </div>
+                        </li>
+                        <!-- End Misc Pages -->
+                    </ul>
+                </div><!--/end container-->
+            </div><!--/navbar-collapse-->
+        </div>
+        <!--=== End Header ===-->
+
+        @RenderSection("ImageSlider", required: false)
+
+        @RenderSection("BreadCrumbs", required: false)
+          
+         
+        <!--=== Content ===-->
+        <div class="container content">
+            @RenderSection("Acount", required: false)
+            @RenderBody()                  
+        </div>
+        <!--=== End Content ===-->
+
+        @RenderSection("IndexBlock", required: false)
+       
+        <!--=== Footer v2 ===-->
+        <div id="footer-v2" class="footer-v2">
+            <div class="footer">
+                <div class="container">
+                    <div class="row">
+                        <!-- About -->
+                        <div class="col-md-3 md-margin-bottom-40">
+                            <a href="index.html"><img id="logo-footer" width="130" class="footer-logo" src="/assets/img/logo1-default.png" alt=""></a>
+                            <p class="margin-bottom-20">
+                                比邻三维科技有限公司总部位于福建省
+                                泉州市，是一家旨在为客户提供一站式的
+                                三维数字化（3D打印）综合服务的数字创
+                                意型公司。公司整合了全球三维数字化全
+                                产业链最优势的软\硬件资源。......
+                            </p>
+
+                            @*<form class="footer-subsribe">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Email Address">
+                                    <span class="input-group-btn">
+                                        <button class="btn-u" type="button">Go</button>
+                                    </span>
+                                </div>
+                            </form>*@
+                        </div>
+                        <!-- End About -->
+                        <!-- Link List -->
+                        <div class="col-md-3 md-margin-bottom-40">
+                            <div class="headline"><h2 class="heading-sm">帮助中心</h2></div>
+                            <ul class="list-unstyled link-list">
+                                <li><a href="#">交货周期</a><i class="fa fa-angle-right"></i></li>
+                                <li><a href="#">发票说明</a><i class="fa fa-angle-right"></i></li>
+                                <li><a href="#">配送/支付</a><i class="fa fa-angle-right"></i></li>
+                            </ul>
+                        </div>
+                        <!-- End Link List -->
+                        <!-- Latest Tweets -->
+                        <div class="col-md-3 md-margin-bottom-40">
+                            <div class="latest-tweets">
+                                <div class="headline"><h2 class="heading-sm">售后服务</h2></div>
+                                <ul class="list-unstyled link-list">
+                                    <li><a href="#">验货/收货</a><i class="fa fa-angle-right"></i></li>
+                                    <li><a href="#">返工/退换货</a><i class="fa fa-angle-right"></i></li>
+                                    <li><a href="#">投诉建议</a><i class="fa fa-angle-right"></i></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- End Latest Tweets -->
+                        <!-- Address -->
+                        <div class="col-md-3 md-margin-bottom-40">
+                            <div class="headline"><h2 class="heading-sm">联系我们</h2></div>
+                            <address class="md-margin-bottom-40">
+                                <i class="fa fa-home"></i>福建省泉州市经济开发区德泰路51号<br />
+                                <i class="fa fa-phone"></i>电话: +86-595 28869023 <br />
+                                <i class="fa fa-globe"></i>传真: +86-595 28869023 <br />
+                                <i class="fa fa-envelope"></i>Email: <a href="mailto:info@bilin3d.com">info@bilin3d.com</a>
+                            </address>
+                            <!-- Social Links -->
+                            <ul class="social-icons">
+                                <li><a href="#" data-original-title="Facebook" class="rounded-x social_facebook"></a></li>
+                                <li><a href="#" data-original-title="Twitter" class="rounded-x social_twitter"></a></li>
+                                <li><a href="#" data-original-title="Goole Plus" class="rounded-x social_googleplus"></a></li>
+                                <li><a href="#" data-original-title="Linkedin" class="rounded-x social_linkedin"></a></li>
+                            </ul>
+                            <!-- End Social Links -->
+                        </div>
+                        <!-- End Address -->
+                    </div>
+                </div>
+            </div><!--/footer-->
+
+            <div class="copyright">
+                <div class="container">
+                    <p class="text-center">2015 &copy; All Rights Reserved. Bilin3D</p>
+                </div>
+            </div><!--/copyright-->
+        </div>
+        <!--=== End Footer v2 ===-->
+    </div><!--/wrapper-->
+    <!-- JS Global Compulsory -->
+    @*<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>*@
+    <script src="/assets/plugins/jquery/jquery.min.js"></script>    
+    <script src="/assets/plugins/jquery/jquery-migrate.min.js"></script>
+    <script src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <!-- JS Implementing Plugins -->
+    <script src="/assets/plugins/back-to-top.js"></script>
+    <script src="/assets/plugins/smoothScroll.js"></script>
+    <script src="/assets/plugins/jquery.parallax.js"></script>
+
+    @RenderSection("Javascript", required: false)
+
+    <!-- JS Customization -->
+    <script src="/assets/js/custom.js"></script>
+    <!-- JS Page Level -->
+    <script src="/assets/js/app.js"></script>
+   
+    <!--[if lt IE 9]>
+        <script src="/assets/plugins/respond.js"></script>
+        <script src="/assets/plugins/html5shiv.js"></script>
+        <script src="/assets/plugins/placeholder-IE-fixes.js"></script>
+    <![endif]-->
+</body>
+</html>	

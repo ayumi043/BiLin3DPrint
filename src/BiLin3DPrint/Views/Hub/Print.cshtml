@@ -1,0 +1,337 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section Css{
+    <link href="//cdn.bootcss.com/jqueryui/1.12.0/jquery-ui.min.css" rel="stylesheet">    
+    <style>        
+        .content {
+            padding-top: 20px;           
+        }
+
+        .list-group > li.active, .list-group > li.active:hover {
+            background: none;
+        }
+
+        .list-group > li > a:hover,
+        .list-group > li.active > a {
+            color: #72c02c !important;
+            font-weight: bold;
+        }
+
+        .list-group li a {
+            color: #666;
+            font-size: 14px;
+            padding: 12px 10px;
+        }
+
+        .list-group .active > a,
+        .list-group li > a:focus,
+        .list-group li > a:hover {
+            filter: none !important;
+            color: #72c02c !important;
+            background: inherit !important;
+        }
+
+        #printerlist .printerid{display:none;}
+        .panel-heading{height:40px; line-height:40px;}
+        #printerlist .fname{font-size:20px;font-weight:bold;cursor:pointer;max-width:400px;float:left;}
+        .pbody{display:none;padding-bottom:35px;}
+        .printerState{margin-right:15px;}
+        hr{
+            margin: 12px 0;
+        }
+        .dropdown-menu{/*min-width:96px;*/}
+        .delmaterial{font-size:12px;padding-left:16px;color:red;cursor:pointer;float:right;}
+        .delmaterial:hover{text-decoration:underline;}
+    </style>
+}
+
+@section Javascript{   
+    <script src="//cdn.bootcss.com/jqueryui/1.12.0/jquery-ui.min.js"></script>
+    <script src="/hub/printer.js"></script>
+    <script src="/hub/material.js"></script>
+    <script>
+        var changestate = function (printerid, stateid) {
+            $.ajax({
+                url: '/hub/printer/state',
+                data: {
+                    printerid: printerid,
+                    stateid: stateid
+                },
+                type: 'POST',
+                success: function (data) {                   
+                    alert(data.message);
+                    window.location = "/hub/printer";
+                },
+                error: function (data) {
+                    if (data.status == "400") {
+                        alert(data.responseJSON.message);
+                    }
+                }
+            });
+        };
+
+        $(function () {
+            $("#printer").autocomplete({
+                minLength: 0,
+                source: printers,
+                focus: function (event, ui) {
+                    $("#printer").val(ui.item.label);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $("#printerid").val(ui.item.value);
+                    $("#printer").val(ui.item.label);
+                    $("#addprinter").removeAttr("disabled");
+                    return false;
+                }
+            }).autocomplete("instance")._renderItem = function (ul, item) {
+                return $("<li>")
+                  .append("<div>" + item.label + "</div>")
+                  .appendTo(ul);
+            };
+
+            $(document).on('focus', ".materialtxt", function () {
+                $(this).autocomplete({
+                    minLength: 0,
+                    source: materials,
+                    focus: function (event, ui) {
+                        $(this).val(ui.item.label);
+                        return false;
+                    },
+                    select: function (event, ui) {
+                        $(this).prev(".materialid").val(ui.item.value);
+                        $(this).val(ui.item.label);
+                        $(this).next(".selectmaterial").removeAttr("disabled");
+                        return false;
+                    }
+                }).autocomplete("instance")._renderItem = function (ul, item) {
+                    return $("<li>")
+                      .append("<div>" + item.label + "</div>")
+                      .appendTo(ul);
+                };
+            });
+
+            var GetPrinters = function () {
+                $.ajax({
+                    url: '/hub/printer/material/list',
+                    type: 'GET',
+                    success: function (data) {
+                        var str = "";
+                        $.each(data, function (index, item) {
+                            var materials = "<hr>";
+                            $.each(item.result, function (index, item1) {
+                                if (item1.materialId) {
+                                    materials += "<div class='materialid' printerId='" + item["printer"]["printerId"] + "'  materialId='" + item1.materialId + "'><h3>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + item1.materialName + "</span><span class='delmaterial'>删除</span></div>";
+                                }
+                            });
+                            materials += "<hr>"
+                            str += "<div class='panel panel-grey equal-height-column'>"
+                                        + "<div class='panel-heading'>"
+                                        + "   <h3 class='panel-title fname'>" + item["printer"]["printerName"] + "</h3>"
+                                        + "   <div style='float:right;width:140px;font-size:14px;'>" + "<i style='padding-right:16px;'>已" + item["printer"]["printerState"] + "</i>"
+                                        + "     <div class='btn-group'>"
+                                        + "         <button type='button' class='btn btn-default btn-sm'>操作</button>"
+                                        + "         <button type='button' class='btn btn-default btn-sm dropdown-toggle' data-toggle='dropdown' aria-expanded='false'>"
+                                        + "             <span class='caret'></span>"
+                                        + "             <span class='sr-only'>Toggle Dropdown</span>"
+                                        + "         </button>"
+                                        + "         <ul class='dropdown-menu'>"
+                                        + "             <li><a onclick=\"changestate('" + item["printer"]["printerId"] + "','0')\">启用</a></li>"
+                                        + "             <li><a onclick=\"changestate('" + item["printer"]["printerId"] + "','1')\">禁用</a></li>"
+                                        + "             <li class='divider'></li>"
+                                        + "             <li><a onclick=\"changestate('" + item["printer"]["printerId"] + "','2')\">删除</a></li>"
+                                        + "         </ul>"
+                                        + "     </div>"
+                                        + "   </div>"
+                                        + "</div>"
+                                        + "<div class='panel-body pbody'>"
+                                        + "   <h4>打印材料</h4>"
+                                        + "   <div class='material-list'>" + materials + "</div>"
+                                        + "   <div class='pre-material'></div>"
+                                        + "   <h6>添加打印材料</h6>"
+                                        + "   <input type='hidden' class='materialid' value='' />"
+                                        + "   <input type='text' class='materialtxt' value='' style='height:34px;width:550px;padding-left:6px;' placeholder='打印材料名称' />"
+                                        + "   <button type='button' class='btn btn-u selectmaterial' printerid='" + item["printer"]["printerId"] + "' style='font-size:14px;' disabled='disabled'>确定选择</button>"
+                                        + "   <a href=''>找不到材料？请告诉我们!</a>"
+                                        + "</div>"
+                                  + "</div>";
+                        });
+                        $("#printerlist").html(str);
+                    },
+                    error: function (data) {
+                        alert(data);
+                    }
+                });
+            };
+            GetPrinters();
+
+            $("#addprinter").click(function () {
+                var printerid = $("#printerid").val();
+                $.ajax({
+                    url: '/hub/printer/add',
+                    data: { printerid: printerid },
+                    type: 'POST',
+                    success: function (data) {
+                        GetPrinters();
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            alert(data.responseJSON.message);
+                        }
+                    }
+                });
+            });
+
+            $(document).on("click", ".fname", function () {
+                $(this).parent().next(".pbody").toggle();
+            });
+                       
+            
+            var accuracyOpt = "@Html.Raw(Model.accuracyOpt)";
+            var completeOpt = "@Html.Raw(Model.completeOpt)";
+            $(document).on("click", ".selectmaterial", function () {
+                var $this = $(this);
+                var printerid = $this.attr("printerid");             
+                var materialid = $this.prevAll(".materialid").val();
+                $this.attr("disabled", "disabled");
+                var materialtxt = $this.prevAll(".materialtxt").val();
+                $this.prevAll(".materialtxt").val("");
+                $this.prevAll(".materialid").val("");
+
+                $.get("/hub/material/" + materialid, function (result) {
+                    var str = "<h3>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + materialtxt + "</span></h3>"
+                        + "<div style='margin:10px 0px 10px 32px'>"
+                        + "  <span>精度：" + accuracyOpt + "</span>"
+                        + "  <span style='padding-left:22px;'>完成周期：" + completeOpt + "</span>"
+                        + "</div>"
+                        + "<div style='margin:10px 0px 10px 32px'>"
+                        + "  <span>密度：" + result.density + "(克/立方厘米)</span>"
+                        + "  <span style='padding-left:22px;'>颜色：" + result.color + "</span>"
+                        + "</div>"
+                        + "<div style='margin:10px 0px 10px 32px'>"
+                        + "  <span>价格￥：<input type='text' class='mat-price' value='" + result.price + "' /></span>"
+                        + "</div>"
+                        + "<div style='margin:0px 0px 0px 32px;'><button type='button' printerid='" + printerid  + "' materialid='" + materialid + "' class='btn btn-u addmaterial' style='font-size:12px;'>添加材料</button></div>"
+                        + "<hr>";
+                    $this.prevAll(".pre-material").html(str);
+                });
+            });        
+         
+            $(document).on("click", ".addmaterial", function () {
+                var info = $(this).parents(".pre-material");              
+                var materialid = $(this).attr("materialid");
+                var printerid = $(this).attr("printerid");
+                var accuracyid = info.find(".accuracyOpt").val();
+                var completeid = info.find(".completeOpt").val();
+                var price = info.find(".mat-price").val();
+                if (!(/^([-]){0,1}([0-9]){1,}([.]){0,1}([0-9]){0,}$/).test(price)) {
+                    alert("请正确填写价格");
+                    return;
+                }
+
+                var mat = info.prev(".material-list");
+
+                if (materialid && printerid && accuracyid && completeid) {
+                    $.ajax({
+                        url: '/hub/printer/material/add',
+                        data: {
+                            printerid: printerid,
+                            materialid: materialid,
+                            completeid: completeid,
+                            accuracyid: accuracyid,
+                            price: price
+                        },
+                        type: 'POST',
+                        success: function (data) {                            
+                            info.html("");
+                            $.ajax({
+                                url: "/hub/printer/material/" + printerid,
+                                type: 'POST',
+                                success: function (data) {
+                                    var materials = "<hr>";
+                                    $.each(data, function (index, item1) {
+                                        if (item1.materialId) {
+                                            materials += "<div class='materialid' printerId='" + printerid + "'  materialId='" + item1.materialId + "'><h3>&nbsp;>&nbsp;<span style='text-decoration:underline;'>" + item1.name + "</span><span class='delmaterial'>删除</span></div>";
+                                        }
+                                    });
+                                    mat.html(materials);
+                                    alert("添加成功!");
+                                },
+                                error: function (data) {
+                                    if (data.status == "400") {
+                                        alert(data.responseJSON.message);
+                                    }
+                                }
+                            });                            
+                        },
+                        error: function (data) {
+                            if (data.status == "400") {
+                                alert(data.responseJSON.message);
+                            }
+                        }
+                    });
+                } else {
+                    alert("请正确填写信息");
+                    return;
+                }
+            });
+
+            $(document).on("click", ".delmaterial", function () {
+                var $mat = $(this).parents(".materialid");
+                var printerid = $mat.attr("printerId");
+                var materialid = $mat.attr("materialId");              
+                $.ajax({
+                    url: '/hub/printer/material/delete',
+                    data: {
+                        printerid: printerid,
+                        materialid: materialid
+                    },
+                    type: 'POST',
+                    success: function (data) {
+                        $mat.remove();
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            alert(data.responseJSON.message);
+                        }
+                    }
+                });
+            });
+
+
+        });
+    </script>
+}
+
+<div class="row">
+    <!-- 左边菜单-->   
+    @Html.Partial("_Hub.cshtml", Model)
+    <!-- 左边菜单 -->
+    
+    <!-- Begin Content -->
+    <div class="col-md-9">
+        <div><h2>我的打印机</h2></div>
+        
+        <div id="printerlist">            
+        </div>
+
+        <div class="panel-body">
+            <h4>添加打印机</h4>
+            <input type="hidden" id="printerid" value="" />
+            <input type="text" id="printer" value="" style="height:34px;width:550px;padding-left:6px;" placeholder="打印机名称" />
+            <button type="button" id="addprinter" class="btn btn-u" style="font-size:14px;" disabled="disabled">添加打印机</button>
+            <a href="/">找不到打印机？请告诉我们!</a>
+        </div>
+
+        <div class="margin-bottom-40"></div>
+               
+    </div>
+    <!-- End Content -->
+</div>

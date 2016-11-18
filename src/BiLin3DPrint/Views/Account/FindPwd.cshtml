@@ -1,0 +1,84 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section BreadCrumbs {
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">密码找回</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li class="active">密码找回</li>
+            </ul>
+        </div><!--/container-->
+    </div>
+}
+
+@section Javascript {
+    <script>
+        $(function () {
+            $("#tj").click(function () {
+                $("#findresult").html("");
+                $.ajax({
+                    url: '/account/findpwd',
+                    data: $("form").serialize(),
+                    type: 'post',                  
+                    success: function (data) {
+                        $("#error").hide();
+                        $("#errormessage").html("");
+                        $("#findresult").html("<h3>"+data.message+"<h3>");                       
+                    },
+                    error: function (data) {                        
+                        var str = "";
+                        $.each(JSON.parse(data.responseText), function (index, item) {
+                            str += "<p>" + item["errorMessage"] + "</p>"
+                        });
+                        $("#error").show();
+                        $("#errormessage").html(str);
+                        $('body').animate({ scrollTop: 0 }, 500);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+}
+
+<div class="row errormessage">
+    <div class="alert alert-danger alert-dismissible fade in" role="alert" id="error" style="display:none;">
+        <h4>请认真填写信息!</h4>
+        <div id="errormessage"></div>
+    </div>
+</div>
+
+<div class="row" id="findresult">
+
+</div>
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
+        <form class="reg-page" method="post" onsubmit="return false;">
+            <div class="reg-header">
+                <h4>请输入您的email</h4>
+            </div>
+
+            <div class="input-group margin-bottom-20">
+                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                <input type="text" placeholder="Email" name="Email" value="" class="form-control" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 checkbox">
+                </div>
+                <div class="col-md-6">
+                    <span id="tj" class="btn-u pull-right" type="button">提交</span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

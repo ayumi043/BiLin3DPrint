@@ -1,0 +1,114 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}   
+
+@section BreadCrumbs {
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">登陆</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li class="active">登录</li>
+            </ul>
+        </div><!--/container-->
+    </div>
+}
+
+@{
+    if (@Html.IsDebug()) {
+        <text></text>
+    } else {
+        <text></text>
+    }
+}
+
+@section Javascript {
+    <script>
+        $(function () {
+            $("#submit").click(function () {
+                var reg = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/;
+                var $email = $("#email").val();
+                var $password = $("#password").val();
+                if (!reg.test($email)){
+                    $("#errormessage").html("<p>email填写不正确！</p>")
+                    $("#email").focus();
+                    $("#error").show();
+                    return false;
+                }
+                if ($password.length < 6) {
+                    $("#errormessage").html("<p>密码填写不正确！</p>")
+                    $("#password").focus();
+                    $("#error").show();
+                    return false;
+                }
+
+            });
+        });
+    </script>
+}
+
+<div class="row errormessage">
+    <div class="alert alert-danger alert-dismissible fade in" role="alert" id="error" @if (Model.Page.Errors.Count == 0) { <text> style="display:none;" </text> } >
+        <h4>请认真填写信息!</h4>
+        <div id="errormessage">
+            @foreach (var item in Model.Page.Errors) {
+                <p>@item.ErrorMessage</p>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row margin-bottom-60">
+    <div class="col-sm-6">
+        <!-- Owl Carousel v5 -->
+        <div class="owl-carousel-v5">
+            <div class="owl-item" style="width: 570px;">
+                <div class="item">
+                    <img class="full-width img-responsive" src="/assets/img/main/img12.jpg" alt="">
+                </div>
+            </div>                        
+        </div>
+        <!-- End Owl Carousel v5 -->
+    </div>
+    <div class="col-sm-6">
+        <form class="reg-page" method="post">
+            <div class="reg-header">
+                <h2>用户登录</h2>
+            </div>
+
+            <div class="input-group margin-bottom-20">
+                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                <input type="text" placeholder="Email" id="email" name="Email" value="@Model.LoginModel.Email" class="form-control" />
+                @*@Html.ValidationMessageFor((List<Bilin3d.Models.ErrorModel>)Model.Page.Errors, "Email")*@
+            </div>
+            <div class="input-group margin-bottom-20">
+                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                <input type="password" placeholder="Password" id="password" name="Password" value="@Model.LoginModel.Password" class="form-control" />
+                @*@Html.ValidationMessageFor((List<Bilin3d.Models.ErrorModel>)Model.Page.Errors, "Password")*@
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 checkbox">
+                    <label for="RememberMe">
+                        @Html.CheckBox("RememberMe", (bool)Model.LoginModel.RememberMe)
+                        自动登陆
+                    </label>
+                </div>
+                <div class="col-md-6">
+                    <button class="btn-u pull-right" id="submit" type="submit">登录</button>
+                </div>
+            </div>
+
+            <hr>
+
+            <h5>没有账号?&nbsp;&nbsp;&nbsp;&nbsp;忘记密码？</h5>
+            <p><a class="color-green" href="/account/register">点击注册</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="color-green" href="/account/findpwd">密码找回</a></p>
+        </form>
+    </div>
+</div>
+

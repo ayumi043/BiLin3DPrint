@@ -1,0 +1,33 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+<style>
+    body{ background:#f4f6f6 !important;}
+    .wrapper{background:none !important;}
+</style>
+
+<div class="col-md-3">
+    <ul class="list-group sidebar-nav-v1" id="sidebar-nav">
+        <li class="list-group-item">
+            <a href="/hub">HUB首页</a>
+        </li>
+        <li class="list-group-item list-toggle">
+            <a href="/hub/edit">编辑HUB</a>
+            <ul id="collapse-typography" class="collapse in">
+                <li @if (Request.Path.ToLower().Contains("printer")){<text> class="active" </text>}><a href="/hub/printer"> 打印机&价格</a></li>
+                <li @if (Request.Path.ToLower().Contains("order")){<text> class="active" </text>}>
+                    <span class="badge badge-u">@Model.countNoAudit</span>
+                    <a href="/hub/order"> 我的订单</a>
+                </li>
+                <li @if (Request.Path.ToLower().Contains("balance")){<text> class="active" </text>}>
+                    <a href="/hub/balance"> 账户余额</a>
+                </li>
+                <li @if (Request.Path.ToLower().Contains("withdraw")){<text> class="active" </text>}>
+                    <a href="/hub/withdraw"> 提现</a>
+                </li>
+                <li>
+                    <span class="badge badge-u">New</span>
+                    <a href="#"> 积分</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

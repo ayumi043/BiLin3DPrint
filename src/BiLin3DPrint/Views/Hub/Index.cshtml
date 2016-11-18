@@ -1,0 +1,74 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section Javascript{
+    <script>
+        $(function () {
+                     
+        });
+    </script>
+}
+
+<style>
+    .content{
+        padding-top:20px;
+    }
+
+    .list-group > li.active, .list-group > li.active:hover {
+        background: none;
+    }
+    .list-group > li > a:hover,
+    .list-group > li.active > a {
+        color: #72c02c !important;
+        font-weight:bold;
+    }
+
+    .list-group li a {
+        color: #666;
+        font-size: 14px;
+        padding: 12px 10px;
+    }
+
+    .list-group .active > a,
+    .list-group li > a:focus,
+    .list-group li > a:hover {
+        filter: none !important;
+        color: #72c02c !important;
+        background: inherit !important;
+    }
+   
+</style>
+
+
+<div class="row">
+    <!-- 左边菜单-->
+    @Html.Partial("_Hub.cshtml")
+    <!-- 左边菜单 -->
+    
+    <!-- Begin Content -->
+    <div class="col-md-9">
+        <div>
+            <!-- Grey Panel with Equal Height -->
+            <div class="panel panel-grey equal-height-column" style="height: 220px;">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-tasks"></i> Hub首页</h3>
+                </div>
+                <div class="panel-body">
+                    <h4>Accusamus et iusto odio</h4>
+                    <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.</p>
+                </div>
+            </div>
+            <!-- End Grey Panel with Equal Height -->
+        </div>
+
+        <div class="margin-bottom-40"></div>
+
+    </div>
+    <!-- End Content -->
+</div>

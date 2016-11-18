@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0FEB3885-557F-4B11-987F-786ED7164C45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9868397-97B8-4D39-BCC0-C148D8D208E0}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "BiLin3DPrint", "src\BiLin3DPrint\BiLin3DPrint.xproj", "{EC7FD423-F4E6-4D0C-9BB0-CDD44E04B38E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC7FD423-F4E6-4D0C-9BB0-CDD44E04B38E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC7FD423-F4E6-4D0C-9BB0-CDD44E04B38E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC7FD423-F4E6-4D0C-9BB0-CDD44E04B38E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC7FD423-F4E6-4D0C-9BB0-CDD44E04B38E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EC7FD423-F4E6-4D0C-9BB0-CDD44E04B38E} = {0FEB3885-557F-4B11-987F-786ED7164C45}
+	EndGlobalSection
+EndGlobal

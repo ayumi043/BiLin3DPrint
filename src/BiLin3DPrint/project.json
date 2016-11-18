@@ -1,0 +1,59 @@
+{
+  "dependencies": {
+    "log4net": "2.0.5",
+    "Microsoft.AspNet.Razor": "3.2.3",
+    "Microsoft.AspNetCore.Diagnostics": "1.1.0",
+    "Microsoft.AspNetCore.Owin": "1.1.0",
+    "Microsoft.AspNetCore.Razor.Tools": "1.1.0-preview4-final",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+    "Microsoft.Extensions.Configuration.Json": "1.1.0",
+    "Microsoft.Extensions.Logging.Console": "1.1.0",
+    "MySql.Data": "6.9.8",
+    "Nancy": "1.4.3",
+    "Nancy.Authentication.Forms": "1.4.1",
+    "Nancy.Hosting.Aspnet": "1.4.1",
+    "Nancy.Validation.DataAnnotations": "1.4.1",
+    "Nancy.Viewengines.Razor": "1.4.3",
+    //"ServiceStack.Common": "4.0.42",
+    //"ServiceStack.Interfaces": "4.0.42",
+    //"ServiceStack.OrmLite": "4.0.42",
+    //"ServiceStack.Text": "4.0.42",
+    "ServiceStack.OrmLite.MySql": "4.0.42",
+    "System.Data.Common": "4.3.0",
+    "Yiauo.Three": "1.0.1"
+  },
+
+  "tools": {
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-preview4-final"
+  },
+
+  "frameworks": {
+    "net461": {
+      "frameworkAssemblies": {
+      }
+    }
+  },
+
+  "buildOptions": {
+    "emitEntryPoint": true,
+    "preserveCompilationContext": true
+  },
+
+  "publishOptions": {
+    "include": [
+      "wwwroot",
+      "**/*.cshtml",
+      "appsettings.json",
+      "web.config",
+
+      "assets",
+      "public",
+      "resource"
+    ]
+  },
+
+  "scripts": {
+    "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
+  }
+}

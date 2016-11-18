@@ -1,0 +1,73 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section Javascript{
+    <script>
+        $(function() {
+           
+        });
+    </script>
+}
+
+<style>
+    .content{
+        padding-top:20px;
+    }
+
+    .list-group > li.active, .list-group > li.active:hover {
+        background: none;
+    }
+    .list-group > li > a:hover,
+    .list-group > li.active > a {
+        color: #72c02c !important;
+        font-weight:bold;
+    }
+
+    .list-group li a {
+        color: #666;
+        font-size: 14px;
+        padding: 12px 10px;
+    }
+
+    .list-group .active > a,
+    .list-group li > a:focus,
+    .list-group li > a:hover {
+        filter: none !important;
+        color: #72c02c !important;
+        background: inherit !important;
+    }
+    #company {
+        display: none;
+    }
+</style>
+
+
+<div class="row">
+    <!-- 左边菜单-->
+    @Html.Partial("_Hub.cshtml")
+    <!-- 左边菜单 -->
+    
+    <!-- Begin Content -->
+    <div class="col-md-9">
+        @*<div class="tag-box tag-box-v3 form-page">
+            <div class="headline">
+                <h3>加入HUB</h3>
+            </div>
+            <p>加入3D HUB通过打印本地订单赚钱</p>
+            <div class="margin-bottom-10"></div>
+            <button type="submit" class="btn-u center">开始创建HUB</button>
+        </div>*@
+
+        <div class="row errormessage">
+            <div class="alert alert-success fade in" role="alert" id="error">
+                <h4>@Model.Message</h4>              
+            </div>
+        </div>
+
+    </div>
+    <!-- End Content -->
+</div>

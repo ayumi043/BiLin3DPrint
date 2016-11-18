@@ -1,0 +1,245 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section BreadCrumbs {
+    <div class="breadcrumbs">
+        <div class="container">
+            <h3 class="pull-left">个人信息</h3>
+            <ul class="pull-right breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li class="active">个人信息</li>
+            </ul>
+        </div><!--/container-->
+    </div>
+}
+
+@section Acount {
+    @Html.Partial("_Acount.cshtml")
+}
+
+@section Javascript{
+<style>
+    .form-group{margin-bottom:10px;}
+</style>
+<link rel="stylesheet" href="/assets/plugins/sky-forms-pro/skyforms/css/sky-forms.css">
+<link rel="stylesheet" href="/assets/plugins/sky-forms-pro/skyforms/custom/custom-sky-forms.css">
+<script src="/assets/js/plugins/cityselect/jquery.cityselect.js"></script>
+<script>
+    $(function () {
+            $("#city").citySelect({ nodata: "none", required: false });
+            $(".delete-address").click(function () {
+                //alert($(this).parents(".reg-page").remove().html());
+                $(this).parents(".reg-page").slideUp();               
+                $.ajax({
+                    url: '/account/address',
+                    data: { id: $(this).attr('val') },
+                    type: 'POST',
+                    success: function (data) {
+                        //$(this).parents(".reg-page").remove();
+                        //return;
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            alert("删除失败了");
+                        }                      
+                    }
+                });
+            });
+            $("#state").click(function () {
+                if ($(this).is(':checked')) {
+                    $(this).val("1");
+                } else {
+                    $(this).val("0");
+                }
+            });
+            $("#add-address").click(function () {
+                $("#arress-form").show();
+                $('body').animate({ scrollTop: 99999999 }, 500);               
+            });
+            $("#address-new").click(function () {
+                var company = $(".company").val();
+                var consignee = $(".consignee").val();
+                var province = $(".province").val();
+                var city = $(".city").val();
+                var dist = $(".dist").val();
+                var address = $(".address").val();
+                var tel = $(".tel").val();
+                var state = $("#state").val();
+                $.ajax({
+                    url: '/account/address/add',
+                    data: {
+                        Company: company,
+                        Consignee: consignee,
+                        Province: province,
+                        City: city,
+                        Dist: dist,
+                        Address: address,
+                        Tel: tel,
+                        State: state
+                    },
+                    type: 'post',
+                    cache: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        //alert("成功！");
+                        window.location = "/account/address";
+                        return;
+                    },
+                    error: function (data) {
+                        if (data.status == "400") {
+                            //alert("失败了");
+                        }
+                        var str = "";
+                        $.each(JSON.parse(data.responseText), function (index, item) {
+                            str += "<p>" + item["errorMessage"] + "</p>"
+                        });
+                        $("#error").show();
+                        $("#errormessage").html(str);
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+<div class="row" style="margin:-20px 2px 13px 0px;">
+    <div class="pull-right">
+        <span class="text-danger">（收货地址不能超过20个）</span><button type="button" id="add-address" class="btn btn-u">新增收货地址</button>
+    </div>    
+</div>
+
+@foreach (var item in Model.Addresses) {
+    <div class="row reg-page" style="padding:20px !important;margin:0px 0px 15px 0px !important;position:relative;">
+        @if (item.State == "1") {<span style="position:absolute;left:0px;top:0px;" class="label label-u">默认地址</span> }
+        <div class="col-sm-12">
+            <div class="form-horizontal" method="post" style="margin-top:8px;">
+                <div style="clear:both;">
+                    <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-1 text-right">收货人</label>
+                                               
+                        <div class="col-sm-7">
+                            @item.Consignee  &nbsp; 
+                        </div>
+                        <div class="pull-right">
+                            <span><a style="cursor:pointer;" class="delete-address" val="@item.Id">删除</a></span> &nbsp;
+                            <span><a href="/account/address/@item.Id">编辑</a></span>
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword3" class="col-sm-1 text-right">所在地区</label>
+                        <div class="col-sm-7">
+                            @item.Province  @item.City  @item.Dist
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword3" class="col-sm-1 text-right">详细地址</label>
+                        <div class="col-sm-7">
+                            @item.Address
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword3" class="col-sm-1 control-label">手机号码</label>
+                        <div class="col-sm-7">
+                            @item.Tel
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row" id="arress-form" style="margin:0px 0px 0px 0px;display:none;">
+
+    <form action="#" id="sky-form" class="sky-form" novalidate="novalidate">
+
+        <header>新增收货地址</header>
+        <fieldset>
+            <div id="addressform">
+                <div class="row">
+
+                    <label class="label col col-1">公司名称：</label>
+                    <section class="col col-6">
+                        <label class="input">
+                            <input type="text" class="company" name="company" placeholder="公司名称">
+                        </label>
+                    </section>
+                </div>
+                <div class="row">
+
+                    <label class="label col col-1"><span class="span-error">*</span>收货人：</label>
+                    <section class="col col-6">
+                        <label class="input">
+                            <input type="text" class="consignee" name="consignee" placeholder="收货人">
+                        </label>
+                    </section>
+                </div>
+                <div class="row" id="city">
+                    <label class="label col col-1"><span class="span-error">*</span>所在地区：</label>
+                    <section class="col col-3">
+                        <label class="select">
+                            <select class="prov province"></select>
+                            <i></i>
+                        </label>
+                    </section>
+
+                    <section class="col col-3">
+                        <label class="select">
+                            <select class="city" disabled="disabled"></select>
+                            <i></i>
+                        </label>
+                    </section>
+
+                    <section class="col col-3">
+                        <label class="select">
+                            <select class="dist" disabled="disabled"></select>
+                            <i></i>
+                        </label>
+                    </section>
+                </div>
+
+                <div class="row">
+
+                    <label class="label col col-1"><span class="span-error">*</span>详细地址：</label>
+                    <section class="col col-9">
+                        <label class="input">
+                            <input type="text" class="address" placeholder="详细地址">
+                        </label>
+                    </section>
+                </div>
+
+                <div class="row">
+
+                    <label class="label col col-1"><span class="span-error">*</span>手机号码：</label>
+                    <section class="col col-3">
+                        <label class="input">
+                            <input type="text" class="tel" placeholder="手机号码">
+                        </label>
+                    </section>
+                </div>
+
+                <div class="alert alert-danger alert-dismissible fade in" role="alert" id="error" style="display:none;">
+                    <h4>请认真填写信息!</h4>
+                    <div id="errormessage"></div>
+                </div>
+
+                <div class="row">
+                    <label class="label col col-1"></label>
+                    <div class="col col-5">
+                        默认地址：<input type="checkbox" id="state" name="State" value="0" />
+                        &nbsp;&nbsp;
+                        <button type="button" class="btn-u" id="address-new">保存收货人信息</button>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
