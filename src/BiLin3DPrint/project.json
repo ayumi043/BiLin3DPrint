@@ -47,9 +47,8 @@
       "appsettings.json",
       "web.config",
 
-      "assets",
-      "public",
-      "resource"
+      "Public",
+      "Content"
     ]
   },
 

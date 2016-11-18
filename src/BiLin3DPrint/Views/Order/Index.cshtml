@@ -105,7 +105,7 @@
                         @consignee
                         <p>@address</p>
                     </td>
-                    <td class="text-center" style="width:130px;"><b>￥@amount</b></td>
+                    <td class="text-center" style="width:130px;"><b>￥@amount.ToString("f2")</b></td>
                     <td class="text-center" style="width:180px;padding:16px 12px 0px 12px !important;">
                         @statename
                         @if (stateid == "1") {
