@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: 
+Disallow: /admin/
+Disallow: /account/
+Disallow: /order/
+Disallow: /hub/
+Disallow: /car/
+Disallow: /Content/
