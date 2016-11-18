@@ -301,3 +301,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+# 
+doc/ 
+src/BiLin3DPrint/log-file.txt
+src/BiLin3DPrint/log.*
+src/BiLin3DPrint/Content
