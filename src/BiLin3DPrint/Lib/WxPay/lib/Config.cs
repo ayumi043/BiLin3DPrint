@@ -16,8 +16,8 @@ namespace WxPayAPI
         * KEY：商户支付密钥，参考开户邮件设置（必须配置）
         * APPSECRET：公众帐号secert（仅JSAPI支付的时候需要配置）
         */
-        public const string APPID = "wx2428e34e0e7dc6ef";
-        public const string MCHID = "1233410002";
+        public const string APPID = "wx34e6d95f227d51be";
+        public const string MCHID = "1408236202";
         public const string KEY = "e10adc3849ba56abbe56e056f20f883e";
         public const string APPSECRET = "51c56b886b5be869567dd389b3e5d1d6";
 

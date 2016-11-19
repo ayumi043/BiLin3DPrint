@@ -16,8 +16,7 @@ namespace Bilin3d.Modules {
 
         protected PageModel Page { get; set; }
 
-        public BaseModule()
-        {
+        public BaseModule() {
             SetupModelDefaults();
         }
 
