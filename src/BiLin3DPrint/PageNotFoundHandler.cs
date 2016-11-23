@@ -13,16 +13,6 @@ namespace Bilin3d {
         }
 
         public void Handle(HttpStatusCode statusCode, NancyContext context) {
-            //dynamic Model = new ExpandoObject();
-            //PageModel page = new PageModel() {
-            //    IsAuthenticated = context.CurrentUser != null,
-            //    PreFixTitle = "Bilin 3D - ",
-            //    CurrentUser = context.CurrentUser != null ? context.CurrentUser.UserName : "",
-            //    Errors = new List<ErrorModel>()
-            //};
-            //page.Title = "404";
-            //Model.Page = page;
-
             var response = RenderView(context, "Home/404");
             response.StatusCode = HttpStatusCode.NotFound;
             context.Response = response;

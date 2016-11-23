@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using Nancy;
 
 namespace WxPayAPI
 {
@@ -12,7 +11,7 @@ namespace WxPayAPI
     /// </summary>
     public class ResultNotify:Notify
     {
-        public ResultNotify(Page page):base(page)
+        public ResultNotify(NancyContext context):base(context)
         {
         }
 
@@ -28,8 +27,8 @@ namespace WxPayAPI
                 res.SetValue("return_code", "FAIL");
                 res.SetValue("return_msg", "支付结果中微信订单号不存在");
                 Log.Error(this.GetType().ToString(), "The Pay result is error : " + res.ToXml());
-                page.Response.Write(res.ToXml());
-                page.Response.End();
+                //page.Response.Write(res.ToXml());
+                //page.Response.End();
             }
 
             string transaction_id = notifyData.GetValue("transaction_id").ToString();
@@ -42,8 +41,8 @@ namespace WxPayAPI
                 res.SetValue("return_code", "FAIL");
                 res.SetValue("return_msg", "订单查询失败");
                 Log.Error(this.GetType().ToString(), "Order query failure : " + res.ToXml());
-                page.Response.Write(res.ToXml());
-                page.Response.End();
+                //page.Response.Write(res.ToXml());
+                //page.Response.End();
             }
             //查询订单成功
             else
@@ -52,8 +51,8 @@ namespace WxPayAPI
                 res.SetValue("return_code", "SUCCESS");
                 res.SetValue("return_msg", "OK");
                 Log.Info(this.GetType().ToString(), "order query success : " + res.ToXml());
-                page.Response.Write(res.ToXml());
-                page.Response.End();
+                //page.Response.Write(res.ToXml());
+                //page.Response.End();
             }
         }
 

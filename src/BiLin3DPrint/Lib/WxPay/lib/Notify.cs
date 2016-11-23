@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using System.Text;
+using Nancy;
 
 namespace WxPayAPI
 {
@@ -14,10 +13,10 @@ namespace WxPayAPI
     /// </summary>
     public class Notify
     {
-        public Page page {get;set;}
-        public Notify(Page page)
+        public NancyContext context { get;set;}
+        public Notify(NancyContext context)
         {
-            this.page = page;
+            this.context = context;
         }
 
         /// <summary>
@@ -26,8 +25,8 @@ namespace WxPayAPI
         /// <returns>微信支付后台返回的数据</returns>
         public WxPayData GetNotifyData()
         {
-            //接收从微信后台POST过来的数据
-            System.IO.Stream s = page.Request.InputStream;
+            //接收从微信后台POST过来的数据           
+            System.IO.Stream s = context.Request.Body;
             int count = 0;
             byte[] buffer = new byte[1024];
             StringBuilder builder = new StringBuilder();
@@ -54,8 +53,8 @@ namespace WxPayAPI
                 res.SetValue("return_code", "FAIL");
                 res.SetValue("return_msg", ex.Message);
                 Log.Error(this.GetType().ToString(), "Sign check error : " + res.ToXml());
-                page.Response.Write(res.ToXml());
-                page.Response.End();
+                //page.Response.Write(res.ToXml());               
+                //page.Response.End();
             }
 
             Log.Info(this.GetType().ToString(), "Check sign success");

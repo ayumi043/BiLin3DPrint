@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using Nancy;
 
 namespace WxPayAPI
 {
@@ -12,7 +11,7 @@ namespace WxPayAPI
     /// </summary>
     public class NativeNotify:Notify
     {
-        public NativeNotify(Page page):base(page)
+        public NativeNotify(NancyContext context) :base(context)
         {
 
         }
@@ -28,8 +27,8 @@ namespace WxPayAPI
                 res.SetValue("return_code", "FAIL");
                 res.SetValue("return_msg", "回调数据异常");
                 Log.Info(this.GetType().ToString(), "The data WeChat post is error : " + res.ToXml());
-                page.Response.Write(res.ToXml());
-                page.Response.End();
+                //page.Response.Write(res.ToXml());
+                //page.Response.End();
             }
 
             //调统一下单接口，获得下单结果
@@ -46,8 +45,8 @@ namespace WxPayAPI
                 res.SetValue("return_code", "FAIL");
                 res.SetValue("return_msg", "统一下单失败");
                 Log.Error(this.GetType().ToString(), "UnifiedOrder failure : " + res.ToXml());
-                page.Response.Write(res.ToXml());
-                page.Response.End();
+                //page.Response.Write(res.ToXml());
+                //page.Response.End();
             }
 
             //若下单失败，则立即返回结果给微信支付后台
@@ -57,8 +56,8 @@ namespace WxPayAPI
                 res.SetValue("return_code", "FAIL");
                 res.SetValue("return_msg", "统一下单失败");
                 Log.Error(this.GetType().ToString(), "UnifiedOrder failure : " + res.ToXml());
-                page.Response.Write(res.ToXml());
-                page.Response.End();
+                //page.Response.Write(res.ToXml());
+                //page.Response.End();
             }
 
             //统一下单成功,则返回成功结果给微信支付后台
@@ -74,8 +73,8 @@ namespace WxPayAPI
             data.SetValue("sign", data.MakeSign());
 
             Log.Info(this.GetType().ToString(), "UnifiedOrder success , send data to WeChat : " + data.ToXml());
-            page.Response.Write(data.ToXml());
-            page.Response.End();
+            //page.Response.Write(data.ToXml());
+            //page.Response.End();
         }
 
         private WxPayData UnifiedOrder(string openId,string productId)
