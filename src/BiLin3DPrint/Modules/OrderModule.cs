@@ -20,6 +20,11 @@ using System.Text.RegularExpressions;
 using Nancy.Security;
 using System.IO;
 using System.Threading.Tasks;
+using WxPayAPI;
+using Nancy.Helpers;
+using ThoughtWorks.QRCode.Codec;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Bilin3d.Modules {
     public class OrderModule : BaseModule {
@@ -161,6 +166,39 @@ namespace Bilin3d.Modules {
                 return null;
             };
 
+            Get["qrcode"] = parameters => {
+
+                NativePay nativePay = new NativePay();
+
+                //生成扫码支付模式二url
+                string url2 = nativePay.GetPayUrl("123456789");
+
+                //将url生成二维码图片
+                //Image2.ImageUrl = "MakeQRCode.aspx?data=" + HttpUtility.UrlEncode(url2);
+                
+                string str = HttpUtility.UrlEncode(url2);
+
+                //初始化二维码生成工具
+                QRCodeEncoder qrCodeEncoder = new QRCodeEncoder();
+                qrCodeEncoder.QRCodeEncodeMode = QRCodeEncoder.ENCODE_MODE.BYTE;
+                qrCodeEncoder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.M;
+                qrCodeEncoder.QRCodeVersion = 0;
+                qrCodeEncoder.QRCodeScale = 4;
+
+                //将字符串生成二维码图片
+                Bitmap image = qrCodeEncoder.Encode(str, Encoding.Default);
+
+                //保存为PNG到内存流  
+                MemoryStream ms = new MemoryStream();
+                image.Save(ms, ImageFormat.Png);
+
+                //输出二维码图片
+                Response.BinaryWrite(ms.GetBuffer());
+                Response.End();
+
+                return null;
+            };
+            
         }
 
     }

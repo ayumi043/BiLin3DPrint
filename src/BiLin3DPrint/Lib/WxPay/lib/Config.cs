@@ -18,7 +18,7 @@ namespace WxPayAPI
         */
         public const string APPID = "wx34e6d95f227d51be";
         public const string MCHID = "1408236202";
-        public const string KEY = "e10adc3849ba56abbe56e056f20f883e";
+        public const string KEY = "bilin3D2013a56abbe56e056f20bilin";
         public const string APPSECRET = "51c56b886b5be869567dd389b3e5d1d6";
 
         //=======【证书路径设置】===================================== 

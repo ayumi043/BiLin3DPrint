@@ -12,6 +12,7 @@ namespace BiLin3D
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
+                //.UseUrls("http://*:80") // default URL
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()

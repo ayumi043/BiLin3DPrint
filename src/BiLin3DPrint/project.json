@@ -33,6 +33,7 @@
   "frameworks": {
     "net461": {
       "frameworkAssemblies": {
+        "System.Drawing": "4.0.0.0"
       }
     }
   },
