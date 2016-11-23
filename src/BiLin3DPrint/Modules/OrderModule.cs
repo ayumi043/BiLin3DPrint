@@ -162,44 +162,73 @@ namespace Bilin3d.Modules {
 
 
             Get["pay"] = parameters => {
+                //var response = new Response();
+                //response.ContentType = "text/plain";
+                //response.Contents = s =>
+                //{
+                //    byte[] bytes = System.Text.Encoding.UTF8.GetBytes("Hello World ");
+                //    for (int i = 0; i < 10; ++i) {
+                //        for (var j = 0; j < 86; j++) {
+                //            s.Write(bytes, 0, bytes.Length);
+                //        }
+                //        s.WriteByte(10);
+                //        s.Flush();
+                //        System.Threading.Thread.Sleep(500);
+                //    }
+                //};
 
-                return null;
+                //return response;
+
+                //return Response.FromStream(qrcode(), "image/png");
+
+                var response = new Response();
+                response.ContentType = "image/png";
+                response.Contents = stream => {
+                    using (var writer = new BinaryWriter(stream)) {
+                        writer.Write(qrcode());
+                    }
+                };
+                return response;
             };
-
-            Get["qrcode"] = parameters => {
-
-                NativePay nativePay = new NativePay();
-
-                //生成扫码支付模式二url
-                string url2 = nativePay.GetPayUrl("123456789");
-
-                //将url生成二维码图片
-                //Image2.ImageUrl = "MakeQRCode.aspx?data=" + HttpUtility.UrlEncode(url2);
-                
-                string str = HttpUtility.UrlEncode(url2);
-
-                //初始化二维码生成工具
-                QRCodeEncoder qrCodeEncoder = new QRCodeEncoder();
-                qrCodeEncoder.QRCodeEncodeMode = QRCodeEncoder.ENCODE_MODE.BYTE;
-                qrCodeEncoder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.M;
-                qrCodeEncoder.QRCodeVersion = 0;
-                qrCodeEncoder.QRCodeScale = 4;
-
-                //将字符串生成二维码图片
-                Bitmap image = qrCodeEncoder.Encode(str, Encoding.Default);
-
-                //保存为PNG到内存流  
-                MemoryStream ms = new MemoryStream();
-                image.Save(ms, ImageFormat.Png);
-
-                //输出二维码图片
-                Response.BinaryWrite(ms.GetBuffer());
-                Response.End();
-
-                return null;
-            };
-            
+                    
         }
 
+        private byte[] qrcode() {
+
+            NativePay nativePay = new NativePay();
+
+            //生成扫码支付模式二url
+            // url2: weixin://wxpay/bizpayurl?pr=7rms747
+            string url2 = nativePay.GetPayUrl("123456789");
+
+            //将url生成二维码图片
+            //Image2.ImageUrl = "MakeQRCode.aspx?data=" + HttpUtility.UrlEncode(url2);
+
+            // str: weixin%3a%2f%2fwxpay%2fbizpayurl%3fpr%3d7rms747
+            //string str = HttpUtility.UrlEncode(url2);
+            string str =url2;
+
+
+            //初始化二维码生成工具
+            QRCodeEncoder qrCodeEncoder = new QRCodeEncoder();
+            qrCodeEncoder.QRCodeEncodeMode = QRCodeEncoder.ENCODE_MODE.BYTE;
+            qrCodeEncoder.QRCodeErrorCorrect = QRCodeEncoder.ERROR_CORRECTION.M;
+            qrCodeEncoder.QRCodeVersion = 0;
+            qrCodeEncoder.QRCodeScale = 4;
+
+            //将字符串生成二维码图片
+            Bitmap image = qrCodeEncoder.Encode(str, Encoding.Default);
+
+            //保存为PNG到内存流  
+            MemoryStream ms = new MemoryStream();
+            image.Save(ms, ImageFormat.Png);
+
+            //输出二维码图片
+            //Response.BinaryWrite(ms.GetBuffer());
+            //Response.End();
+
+            return ms.GetBuffer();
+            //return ms;
+        }
     }
 }

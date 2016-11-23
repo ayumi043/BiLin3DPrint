@@ -176,8 +176,8 @@ namespace WxPayAPI
         */
         public string ToJson()
         {          
-            //string jsonStr = JsonMapper.ToJson(m_values);
-            string jsonStr = JsonConvert.SerializeObject(m_values);
+            string jsonStr = JsonMapper.ToJson(m_values);
+            //string jsonStr = JsonConvert.SerializeObject(m_values);
             return jsonStr;
         }
 
