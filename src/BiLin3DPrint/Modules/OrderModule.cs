@@ -198,16 +198,10 @@ namespace Bilin3d.Modules {
             NativePay nativePay = new NativePay();
 
             //生成扫码支付模式二url
-            // url2: weixin://wxpay/bizpayurl?pr=7rms747
-            string url2 = nativePay.GetPayUrl("123456789");
+            string url = nativePay.GetPayUrl("123456789");
 
-            //将url生成二维码图片
-            //Image2.ImageUrl = "MakeQRCode.aspx?data=" + HttpUtility.UrlEncode(url2);
-
-            // str: weixin%3a%2f%2fwxpay%2fbizpayurl%3fpr%3d7rms747
-            //string str = HttpUtility.UrlEncode(url2);
-            string str =url2;
-
+            //string str = HttpUtility.UrlEncode(url);
+            string str =url;
 
             //初始化二维码生成工具
             QRCodeEncoder qrCodeEncoder = new QRCodeEncoder();
