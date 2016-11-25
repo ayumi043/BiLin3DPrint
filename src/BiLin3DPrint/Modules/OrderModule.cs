@@ -1,27 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Nancy;
-using Nancy.Authentication.Forms;
 using Nancy.Extensions;
-using Nancy.Validation;
-using Nancy.ModelBinding;
 using Bilin3d.Models;
-using System.Configuration;
-using System.Net;
-using Newtonsoft.Json;
 using System.Data;
-using System.Net.Mail;
 using log4net;
 using ServiceStack.OrmLite;
 using System.Text;
 using System.Text.RegularExpressions;
 using Nancy.Security;
 using System.IO;
-using System.Threading.Tasks;
 using WxPayAPI;
-using Nancy.Helpers;
 using ThoughtWorks.QRCode.Codec;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -161,11 +150,10 @@ namespace Bilin3d.Modules {
             };
 
 
-            Get["pay"] = parameters => {
+            Get["qrcode/{orderId}"] = parameters => {
                 //var response = new Response();
                 //response.ContentType = "text/plain";
-                //response.Contents = s =>
-                //{
+                //response.Contents = s => {
                 //    byte[] bytes = System.Text.Encoding.UTF8.GetBytes("Hello World ");
                 //    for (int i = 0; i < 10; ++i) {
                 //        for (var j = 0; j < 86; j++) {
@@ -176,16 +164,21 @@ namespace Bilin3d.Modules {
                 //        System.Threading.Thread.Sleep(500);
                 //    }
                 //};
-
                 //return response;
 
-                //return Response.FromStream(qrcode(), "image/png");
-
+                string orderId = parameters.orderId;
+                var order = db.Single<OrderModel>("select OrderId,Amount from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
                 var response = new Response();
                 response.ContentType = "image/png";
                 response.Contents = stream => {
                     using (var writer = new BinaryWriter(stream)) {
-                        writer.Write(qrcode());
+                        writer.Write(
+                            qrcode(
+                                order.OrderId,
+                                "3D打印订单付款",
+                                (order.Amount * 100).ToString("f0")
+                            )
+                        );
                     }
                 };
                 return response;
@@ -193,12 +186,12 @@ namespace Bilin3d.Modules {
                     
         }
 
-        private byte[] qrcode() {
+        private byte[] qrcode(string orderId,string body,string total_fee) {
 
             NativePay nativePay = new NativePay();
 
             //生成扫码支付模式二url
-            string url = nativePay.GetPayUrl("123456789");
+            string url = nativePay.GetPayUrl(orderId,body,total_fee);
 
             //string str = HttpUtility.UrlEncode(url);
             string str =url;

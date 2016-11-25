@@ -23,7 +23,11 @@ namespace Bilin3d.Models
         public string Consignee { get; set; }
         public string Express { get; set; }
         public string Address { get; set; }
-        public string SupplierName { get; set; }       
+        public string SupplierName { get; set; }    
+        
+        public int PayFrom { get; set; }
+        public string PayOrderId { get; set; }
+        public DateTime PayTime { get; set; }               
     }
 
 
