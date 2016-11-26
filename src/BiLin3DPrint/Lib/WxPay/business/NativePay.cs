@@ -41,13 +41,14 @@ namespace WxPayAPI
             WxPayData data = new WxPayData();
             data.SetValue("body", body);//商品描述
             data.SetValue("attach", "test");//附加数据
-            data.SetValue("out_trade_no", WxPayApi.GenerateOutTradeNo());//随机字符串
+            //data.SetValue("out_trade_no", WxPayApi.GenerateOutTradeNo());//随机字符串
+            data.SetValue("out_trade_no", orderId);//随机字符串
             data.SetValue("total_fee", total_fee);//总金额,单位是分
             data.SetValue("time_start", DateTime.Now.ToString("yyyyMMddHHmmss"));//交易起始时间
             data.SetValue("time_expire", DateTime.Now.AddMinutes(10).ToString("yyyyMMddHHmmss"));//交易结束时间
             data.SetValue("goods_tag", "jjj");//商品标记
             data.SetValue("trade_type", "NATIVE");//交易类型
-            data.SetValue("product_id", orderId);//商品ID
+            data.SetValue("product_id", "");//商品ID
 
             WxPayData result = WxPayApi.UnifiedOrder(data);//调用统一下单接口
             string url = result.GetValue("code_url").ToString();//获得统一下单接口返回的二维码链接
