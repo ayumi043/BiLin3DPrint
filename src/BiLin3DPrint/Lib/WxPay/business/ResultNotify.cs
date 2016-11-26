@@ -15,13 +15,15 @@ namespace WxPayAPI
         {
         }
 
-        public override void ProcessNotify()
-        {
-            WxPayData notifyData = GetNotifyData();
+        public override Tuple<bool, WxPayData> ProcessNotify() {
+            var  result = GetNotifyData();
+            var notifyData = result.Item2;
+            if (result.Item1 == false) {
+                return Tuple.Create(false, notifyData);
+            }
 
             //检查支付结果中transaction_id是否存在
-            if (!notifyData.IsSet("transaction_id"))
-            {
+            if (!notifyData.IsSet("transaction_id")) {
                 //若transaction_id不存在，则立即返回结果给微信支付后台
                 WxPayData res = new WxPayData();
                 res.SetValue("return_code", "FAIL");
@@ -29,13 +31,13 @@ namespace WxPayAPI
                 Log.Error(this.GetType().ToString(), "The Pay result is error : " + res.ToXml());
                 //page.Response.Write(res.ToXml());
                 //page.Response.End();
+                return Tuple.Create(false, res);
             }
 
             string transaction_id = notifyData.GetValue("transaction_id").ToString();
 
             //查询订单，判断订单真实性
-            if (!QueryOrder(transaction_id))
-            {
+            if (!QueryOrder(transaction_id)) {
                 //若订单查询失败，则立即返回结果给微信支付后台
                 WxPayData res = new WxPayData();
                 res.SetValue("return_code", "FAIL");
@@ -43,16 +45,17 @@ namespace WxPayAPI
                 Log.Error(this.GetType().ToString(), "Order query failure : " + res.ToXml());
                 //page.Response.Write(res.ToXml());
                 //page.Response.End();
+                return Tuple.Create(false, res);
             }
             //查询订单成功
-            else
-            {
+            else {
                 WxPayData res = new WxPayData();
                 res.SetValue("return_code", "SUCCESS");
                 res.SetValue("return_msg", "OK");
                 Log.Info(this.GetType().ToString(), "order query success : " + res.ToXml());
                 //page.Response.Write(res.ToXml());
                 //page.Response.End();
+                return Tuple.Create(true, res);
             }
         }
 

@@ -148,8 +148,7 @@ namespace Bilin3d.Modules {
                 base.Model.Order = order;
                 return View["Detail", base.Model];
             };
-
-
+            
             Get["qrcode/{orderId}"] = parameters => {
                 //var response = new Response();
                 //response.ContentType = "text/plain";
@@ -184,6 +183,30 @@ namespace Bilin3d.Modules {
                 return response;
             };
                     
+        }
+
+        public class NativeNotifyModule : BaseModule {
+            public NativeNotifyModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) {
+
+                Get["/WxPayNotify"] = parameters => {
+                    NativeNotify nativeNatify = new NativeNotify(Context);
+                    var result =  nativeNatify.ProcessNotify();
+                    if (result.Item1 == false) {
+                        throw new Exception(result.Item2.ToXml());
+                    } else {
+                        string orderId = result.Item2.GetValue("out_trade_no").ToString();
+                        var _order = db.Single<string>("select 1 from t_order where OrderId=@OrderId", new { OrderId = orderId });
+                        if (_order == null) {
+                            log.Debug($"订单不存在,订单号:{orderId}!");
+                        } else {
+                            log.Debug($"订单已存在,订单号:{orderId}!");
+                        }                        
+                        //db.Insert("");
+                    }
+                    return null;
+                };
+
+            }
         }
 
         private byte[] qrcode(string orderId,string body,string total_fee) {
