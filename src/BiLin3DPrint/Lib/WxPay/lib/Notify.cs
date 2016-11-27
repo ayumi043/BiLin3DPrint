@@ -51,6 +51,8 @@ namespace WxPayAPI {
             }
 
             Log.Info(this.GetType().ToString(), "Check sign success");
+            Log.Info(this.GetType().ToString(), "转换格式后 : " + data.ToJson());
+
             return Tuple.Create(true, data);
         }
 

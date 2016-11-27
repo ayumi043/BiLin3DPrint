@@ -109,27 +109,7 @@
                     <td class="text-center" style="width:180px;padding:16px 12px 0px 12px !important;">
                         @statename
                         @if (stateid == "1") {
-                            <div><button type="button" data-toggle="modal" data-target="#myModal" class="btn-u btn-u-sm btn-sm" style="width:80px;font-size:14px;">立即付款</button></div>
-                            <div style="display: none;" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog" style="margin:120px auto;">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                                            <h4 id="myModalLabel1" class="modal-title">微信支付</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>请打开微信，扫描下方二维码，完成支付！</p>
-                                            <p>
-                                                <img src="/order/qrcode/@item.Key" alt="" />
-                                            </p>
-                                            <p>支付完后，订单状态更新可能会有延迟!</p>   
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button data-dismiss="modal" class="btn-u" type="button">已完成支付</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div><a href="/order/pay/@item.Key" class="btn-u btn-u-sm btn-sm" style="width:80px;font-size:14px;">立即付款</a></div>
                         }
                     </td>
                 </tr>

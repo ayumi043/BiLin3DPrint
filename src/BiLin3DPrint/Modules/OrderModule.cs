@@ -115,7 +115,8 @@ namespace Bilin3d.Modules {
                     ", orderid, Page.UserId, kd, addressid, remark, stateId);
                 db.ExecuteNonQuery(sql);
                 return Response.AsJson(new {
-                    message = "success"
+                    message = "success",
+                    orderId = orderid
                 });
             };
 
@@ -143,12 +144,12 @@ namespace Bilin3d.Modules {
                     left join t_address  t4 on t4.Id=t1.AddressId
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
                     where t1.UserId='{0}' and t2.OrderId='{1}'
-                    order by t1.CreateTime desc", Page.UserId, id)).FirstOrDefault();
+                    order by t1.EditTime desc", Page.UserId, id)).FirstOrDefault();
                 base.Page.Title = "订详明细";
                 base.Model.Order = order;
                 return View["Detail", base.Model];
             };
-            
+
             Get["qrcode/{orderId}"] = parameters => {
                 //var response = new Response();
                 //response.ContentType = "text/plain";
@@ -164,7 +165,7 @@ namespace Bilin3d.Modules {
                 //    }
                 //};
                 //return response;
-
+                
                 string orderId = parameters.orderId;
                 var order = db.Single<OrderModel>("select OrderId,Amount from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
                 var response = new Response();
@@ -181,27 +182,45 @@ namespace Bilin3d.Modules {
                     }
                 };
                 return response;
+
             };
-                    
+
+            Get["pay/{orderId}"] = parameters => {
+                Page.Title = "付款";
+                var orderId = parameters.orderId;
+                var order = db.Single<string>("select 1 from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
+                if (order == null) {
+                    return "订单号出错!";
+                }
+
+                Model.orderId = orderId;
+                return View["Pay", base.Model];
+            };
+            
         }
 
         public class NativeNotifyModule : BaseModule {
             public NativeNotifyModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) {
 
-                Get["/WxPayNotify"] = parameters => {
+                Post["/WxPayNotify"] = parameters => {
                     NativeNotify nativeNatify = new NativeNotify(Context);
-                    var result =  nativeNatify.ProcessNotify();
+                    var result = nativeNatify.ProcessNotify();
                     if (result.Item1 == false) {
+                        log.Error($"发生错误了:{result.Item2.ToJson()}");
                         throw new Exception(result.Item2.ToXml());
-                    } else {
-                        string orderId = result.Item2.GetValue("out_trade_no").ToString();
-                        var _order = db.Single<string>("select 1 from t_order where OrderId=@OrderId", new { OrderId = orderId });
-                        if (_order == null) {
-                            log.Debug($"订单不存在,订单号:{orderId}!");
-                        } else {
-                            log.Debug($"订单已存在,订单号:{orderId}!");
-                        }                        
-                        //db.Insert("");
+                    }
+
+                    string orderId = result.Item2.GetValue("out_trade_no").ToString().Trim();
+                    string sql = $"select 1 from t_order where OrderId='{orderId}' and StateId=1";
+                    //var _order = db.Single<string>("select 1 from t_order where OrderId=@OrderId and StateId=1", new { OrderId = orderId });
+                    var _order = db.Single<string>(sql);
+                    if (_order != null) {
+                        //System.IO.File.WriteAllText($"gggg{DateTime.Now.ToString("yyyyMMddHHmmssss")}.txt", _order);
+                        //DateTime payTime;
+                        //DateTime.TryParseExact(result.Item2.GetValue("time_end").ToString(), "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out payTime);
+                        db.ExecuteNonQuery($@"update t_order set StateId=2, PayFrom=1, PayOrderId='{result.Item2.GetValue("transaction_id")}', 
+                                                PayTime='{result.Item2.GetValue("time_end")}', EditTime=NOW()
+                                            where OrderId=@OrderId;", new { UserId = Page.UserId, OrderId = orderId });
                     }
                     return null;
                 };
@@ -210,14 +229,13 @@ namespace Bilin3d.Modules {
         }
 
         private byte[] qrcode(string orderId,string body,string total_fee) {
-
             NativePay nativePay = new NativePay();
 
             //生成扫码支付模式二url
-            string url = nativePay.GetPayUrl(orderId,body,total_fee);
+            string url = nativePay.GetPayUrl(orderId, body, total_fee);
 
             //string str = HttpUtility.UrlEncode(url);
-            string str =url;
+            string str = url;
 
             //初始化二维码生成工具
             QRCodeEncoder qrCodeEncoder = new QRCodeEncoder();
@@ -238,7 +256,7 @@ namespace Bilin3d.Modules {
             //Response.End();
 
             return ms.GetBuffer();
-            //return ms;
+            //return ms;         
         }
     }
 }

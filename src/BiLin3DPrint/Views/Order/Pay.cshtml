@@ -1,0 +1,58 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section BreadCrumbs {
+    <div class="breadcrumbs">
+        <div class="container">
+            <h1 class="pull-left">付款</h1>
+            <ul class="pull-right breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li class="active">付款</li>
+            </ul>
+        </div><!--/container-->
+    </div>
+}
+
+@section Acount {
+    @Html.Partial("_Acount.cshtml")
+}
+
+@section Javascript{
+    <script>
+        $(function () {
+            $('.hoverSelector').on('hover', function (e) {
+                $('.hoverSelectorBlock', this).toggleClass('show');
+                e.stopPropagation();
+            });            
+        });
+    </script>
+}
+
+<div class="row" style="padding:0px 15px 0px 15px;margin-top:-30px;">
+    <h3>订单号:@Model.orderId</h3>
+    <div>
+        <div class="modal-content" style="box-shadow:none;">
+            <div class="modal-header">
+                <h4 id="myModalLabel1" class="modal-title">微信支付</h4>
+            </div>
+            <div class="modal-body">
+                <p>请打开微信，扫描下方二维码，完成支付！</p>
+                <p>
+                    <img src="/order/qrcode/@Model.orderId" alt="" />
+                </p>
+                <p>支付完后，订单状态更新可能会有几秒的延迟!</p>
+            </div>
+            <div class="modal-footer">
+                <a data-dismiss="modal" class="btn-u" href="/order">已完成支付</a>
+            </div>
+        </div>
+    </div>
+  
+
+</div>

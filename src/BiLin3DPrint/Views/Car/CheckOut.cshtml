@@ -118,7 +118,7 @@
                     success: function (data) {
                         //alert("成功！");  
                         if (data.message == "success") {
-                            window.location = "/order";
+                            window.location = "/order/pay/" + data.orderId;
                         }                       
                         return;
                     },
@@ -382,4 +382,7 @@
 
 
     </table>
+
+
+
 </div>

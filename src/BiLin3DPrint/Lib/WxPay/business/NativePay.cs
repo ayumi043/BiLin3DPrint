@@ -48,7 +48,7 @@ namespace WxPayAPI
             data.SetValue("time_expire", DateTime.Now.AddMinutes(10).ToString("yyyyMMddHHmmss"));//交易结束时间
             data.SetValue("goods_tag", "jjj");//商品标记
             data.SetValue("trade_type", "NATIVE");//交易类型
-            data.SetValue("product_id", "");//商品ID
+            data.SetValue("product_id", orderId);//商品ID
 
             WxPayData result = WxPayApi.UnifiedOrder(data);//调用统一下单接口
             string url = result.GetValue("code_url").ToString();//获得统一下单接口返回的二维码链接
