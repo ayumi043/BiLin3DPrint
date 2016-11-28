@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Nancy;
 using Nancy.Authentication.Forms;
-using Nancy.Extensions;
 using Nancy.Validation;
 using Nancy.ModelBinding;
 using Bilin3d.Models;
-using System.Configuration;
 using System.Net;
-using Newtonsoft.Json;
 using System.Data;
 using System.Net.Mail;
 using log4net;
@@ -19,7 +14,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Nancy.Security;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Bilin3d.Modules {
     public class AccountModule : BaseModule {

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Nancy;
 using System.Dynamic;
 using Bilin3d.Models;
-using System.Data;
 using ServiceStack.OrmLite;
 using Microsoft.Extensions.Configuration;
 

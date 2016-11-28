@@ -62,7 +62,7 @@ namespace Bilin3d.Modules {
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
                     left join t_supplier t6 on t6.SupplierId=t2.SupplierId
                     where t1.UserId='{0}' {1}
-                    order by t1.CreateTime desc", Page.UserId, condition))
+                    order by t1.EditTime desc", Page.UserId, condition))
                     //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
                     .GroupBy(i => i.OrderId)
                     .ToDictionary(k => k.Key, v => v.ToList());
@@ -182,14 +182,13 @@ namespace Bilin3d.Modules {
                     }
                 };
                 return response;
-
             };
 
             Get["pay/{orderId}"] = parameters => {
                 Page.Title = "付款";
                 var orderId = parameters.orderId;
                 var order = db.Single<string>("select 1 from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
-                if (order == null) {
+                if (order == null) {                    
                     return "订单号出错!";
                 }
 

@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Nancy;
-using Nancy.Security;
+﻿using Nancy;
 using Bilin3d.Models;
 using System.Data;
 using ServiceStack.OrmLite;
 using log4net;
-
-using Nancy.Validation;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 

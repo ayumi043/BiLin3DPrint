@@ -1,4 +1,0 @@
-发生错误了
-未将对象引用设置到对象的实例。
-   在 WxPayAPI.NativePay.GetPayUrl(String orderId, String body, String total_fee) 位置 C:\BiLin3DPrint\src\BiLin3DPrint\Lib\WxPay\business\NativePay.cs:行号 54
-   在 Bilin3d.Modules.OrderModule.qrcode(String orderId, String body, String total_fee) 位置 C:\BiLin3DPrint\src\BiLin3DPrint\Modules\OrderModule.cs:行号 221
