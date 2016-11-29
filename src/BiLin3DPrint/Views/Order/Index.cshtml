@@ -78,7 +78,8 @@
                     var address = item.Value[0].Address; 
                  }
                 <tr class="active" style="color:gray;">
-                    <td colspan="4"><span class="order-time">@createtime</span>   订单号：<a href="/order/@item.Key" target="_blank">@item.Key</a></td>
+                    @*<td colspan="4"><span class="order-time">@createtime</span>   订单号：<a href="/order/@item.Key" target="_blank">@item.Key</a></td>*@
+                    <td colspan="4"><span class="order-time">@createtime</span>   订单号：<a>@item.Key</a></td>
                 </tr>
                 <tr>
                     <td>

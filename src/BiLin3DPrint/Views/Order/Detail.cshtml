@@ -2,6 +2,7 @@
 @using Nancy.Validation;
 @using Bilin3d.HtmlExtensions;
 @using System.Collections.Generic;
+@using Bilin3d.Models;
 
 @{
     Layout = "_Layout.cshtml";
@@ -29,90 +30,71 @@
             $('.hoverSelector').on('hover', function (e) {
                 $('.hoverSelectorBlock', this).toggleClass('show');
                 e.stopPropagation();
-            });            
+            });
         });
     </script>
 }
 
 <div class="row" style="padding:0px 15px 0px 15px;">
+    @{
+        var orders = Model.Orders as List<OrderModel>;
+    }
+    <h3>订单: @orders[0].OrderId</h3>
+    <table class="table" style="border-top:0px;">
+        <tr class="active" style="color:gray;">
+            <td class="text-center">订单详情</td>
+            <td class="text-center" style="width:130px;">收货人</td>
+            <td class="text-center" style="width:130px;">总计</td>
+            <td class="text-center" style="width:180px;"></td>
+        </tr>
+    </table>
 
-        <table class="table" style="border-top:0px;">     
-                <tr class="active" style="color:gray;">
-                    <td class="text-center">订单详情</td>
-                    <td class="text-center" style="width:130px;">收货人</td>
-                    <td class="text-center" style="width:130px;">总计</td>
-                    <td class="text-center" style="width:180px;">
-                        <ul class="orderstate navbar-right">
-                            <li class="dropdown hoverSelector">
-                                <a id="drop3" href="#" class="dropdown-toggle">
-                                    <span id="statename">
+    <table class="table table-bordered ordertable">
+        @{
+            var createtime = @Model.Order.CreateTime;
+            var consignee = item.Value[0].Consignee;
+            var statename = item.Value[0].StateName;
+            var stateid = item.Value[0].StateId;
+            var amount = item.Value[0].Amount;
+            var address = item.Value[0].Address;
+        }
+        <tr class="active" style="color:gray;">
+            <td colspan="4"><span class="order-time">@Order.CreateTime</span>   订单号：<a href="/account/order/@item.Key" target="_blank">@item.Key</a></td>
+        </tr>
+        <tr>
+            <td>
+                @{
+                    var count = item.Value.Count;
+                    var index = 0;
+                }
+                @foreach (var ev in item.Value) {
+                    index++;
+                    var filename = ev.FileName.Split('$');
+                    <div style="float:right;padding:0px 200px 0px 0px;color:gray;">x @ev.Num</div>
+                    <div @if (index < count) { <text> class="order-padding order-border" </text>     } else { <text> style="padding-bottom:0px;margin-bottom:0px;" class="order-padding" </text>     }>
+                        <div>文件：<a target="_blank" href="~/Content/uploads/3d/@ev.FileName" download="@filename[filename.Length - 1]">@filename[filename.Length - 1]</a></div>
+                        <div>尺寸：@ev.Size</div>
+                        <div>表面积：@ev.Area</div>
+                        <div>体积：@ev.Volume</div>
+                        <div>重量：@ev.Weight 克</div>
+                    </div>
+                }
 
-                                       @if (Request.Query["name"] == null) { 
-                                            <text>全部状态</text>
-                                       } else {
-                                            @Request.Query["name"]
-                                       }
+            </td>
+            <td class="text-center" style="width:130px;">
+                @consignee
+                <p>@address</p>
+            </td>
+            <td class="text-center" style="width:130px;"><b>￥@amount</b></td>
+            <td class="text-center" style="width:180px;padding:16px 12px 0px 12px !important;">
+                @statename
+                @if (stateid == "1") {
+                    <div><button type="button" class="btn-u btn-u-sm btn-sm" style="width:80px;font-size:14px;">立即付款</button></div>
+                }
+            </td>
+        </tr>
 
-                                    </span>
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu hoverSelectorBlock">
-                                    <li @if (Request.Query["state"] == null) { <text> class="active" </text>   }><a href="/account/order">全部状态</a></li>
-                                    @foreach (var item in Model.OrderStates) {
-                                    <li @if (Request.Query["state"].Value == item.Id.ToString()) { <text> class="active" </text>   }><a href="/account/order?state=@item.Id&name=@item.StateName">@item.StateName</a></li>
-                                    }
-                                </ul>
-                            </li>
-                        </ul>                       
-                    </td>
-                </tr>
-            </table>
-      
-            <table class="table table-bordered ordertable">
-                @{  
-                    var createtime = Order.CreateTime; 
-                    var consignee = item.Value[0].Consignee; 
-                    var statename = item.Value[0].StateName; 
-                    var stateid = item.Value[0].StateId; 
-                    var amount = item.Value[0].Amount; 
-                    var address = item.Value[0].Address; 
-                 }
-                <tr class="active" style="color:gray;">
-                    <td colspan="4"><span class="order-time">@Order.CreateTime</span>   订单号：<a href="/account/order/@item.Key" target="_blank">@item.Key</a></td>
-                </tr>
-                <tr>
-                    <td>
-                        @{
-                             var count = item.Value.Count;
-                             var index = 0;     
-                        }
-                        @foreach (var ev in item.Value) {
-                            index++;
-                            var filename = ev.FileName.Split('$');
-                            <div style="float:right;padding:0px 200px 0px 0px;color:gray;">x @ev.Num</div>
-                            <div @if (index < count) { <text> class="order-padding order-border" </text>   } else { <text> style="padding-bottom:0px;margin-bottom:0px;" class="order-padding" </text>   }>
-                                <div>文件：<a target="_blank" href="~/Content/uploads/3d/@ev.FileName" download="@filename[filename.Length - 1]">@filename[filename.Length - 1]</a></div>
-                                <div>尺寸：@ev.Size</div>
-                                <div>表面积：@ev.Area</div>
-                                <div>体积：@ev.Volume</div>
-                                <div>重量：@ev.Weight 克</div>
-                            </div>
-                        }
+    </table>
+   
 
-                    </td>
-                    <td class="text-center" style="width:130px;">
-                        @consignee
-                        <p>@address</p>
-                    </td>
-                    <td class="text-center" style="width:130px;"><b>￥@amount</b></td>
-                    <td class="text-center" style="width:180px;padding:16px 12px 0px 12px !important;">
-                        @statename
-                        @if (stateid == "1") {
-                            <div><button type="button" class="btn-u btn-u-sm btn-sm" style="width:80px;font-size:14px;">立即付款</button></div>
-                        }
-                    </td>
-                </tr>
-
-            </table>
-            
 </div>

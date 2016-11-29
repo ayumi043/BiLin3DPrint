@@ -122,7 +122,7 @@ namespace Bilin3d.Modules {
 
             Get["/{id}"] = parameters => {
                 string id = parameters.id;
-                var order = db.Select<OrderModel>(string.Format(@"
+                var orders = db.Select<OrderModel>($@"
                     select t1.OrderId,
                         t1.Express,
                         t1.CreateTime,
@@ -143,29 +143,14 @@ namespace Bilin3d.Modules {
                     left join t_orderstate   t3 on t3.Id=t1.StateId
                     left join t_address  t4 on t4.Id=t1.AddressId
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
-                    where t1.UserId='{0}' and t2.OrderId='{1}'
-                    order by t1.EditTime desc", Page.UserId, id)).FirstOrDefault();
+                    where t1.UserId='{Page.UserId}' and t2.OrderId=@OrderId
+                    order by t1.EditTime desc", new { OrderId = id });
                 base.Page.Title = "订详明细";
-                base.Model.Order = order;
+                base.Model.Orders = orders;
                 return View["Detail", base.Model];
             };
 
             Get["qrcode/{orderId}"] = parameters => {
-                //var response = new Response();
-                //response.ContentType = "text/plain";
-                //response.Contents = s => {
-                //    byte[] bytes = System.Text.Encoding.UTF8.GetBytes("Hello World ");
-                //    for (int i = 0; i < 10; ++i) {
-                //        for (var j = 0; j < 86; j++) {
-                //            s.Write(bytes, 0, bytes.Length);
-                //        }
-                //        s.WriteByte(10);
-                //        s.Flush();
-                //        System.Threading.Thread.Sleep(500);
-                //    }
-                //};
-                //return response;
-                
                 string orderId = parameters.orderId;
                 var order = db.Single<OrderModel>("select OrderId,Amount from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
                 var response = new Response();
@@ -195,7 +180,15 @@ namespace Bilin3d.Modules {
                 Model.orderId = orderId;
                 return View["Pay", base.Model];
             };
-            
+
+            Get["notice/{orderId}"] = parameters => {
+                var orderId = parameters.orderId;
+                var stateId = db.Single<string>("select StateId from t_order where OrderId=@OrderId and UserId=@UserId", new { UserId = Page.UserId, OrderId = orderId });
+                if (stateId == "2") {
+                    return Response.AsJson(new { message = "success" });
+                }
+                return Response.AsJson(new { message = "error" });
+            };
         }
 
         public class NativeNotifyModule : BaseModule {

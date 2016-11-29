@@ -10,7 +10,7 @@
 @section BreadCrumbs {
     <div class="breadcrumbs">
         <div class="container">
-            <h1 class="pull-left">付款</h1>
+            <h1 class="pull-left">订单付款</h1>
             <ul class="pull-right breadcrumb">
                 <li><a href="/">首页</a></li>
                 <li class="active">付款</li>
@@ -26,10 +26,18 @@
 @section Javascript{
     <script>
         $(function () {
-            $('.hoverSelector').on('hover', function (e) {
-                $('.hoverSelectorBlock', this).toggleClass('show');
-                e.stopPropagation();
-            });            
+            var i = 0;
+            var int = setInterval(function () {
+                i++;
+                if (i === 120) {
+                    window.clearInterval(int);
+                }
+                $.get("/order/notice/@Model.orderId", function (data) { 
+                    if (data.message == "success") {
+                        window.location = "/order";
+                    }
+                });
+            }, 5000);
         });
     </script>
 }
