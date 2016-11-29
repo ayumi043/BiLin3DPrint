@@ -38,17 +38,7 @@ namespace Bilin3d.Modules {
                 base.Page.Title = "帮助中心";
 
                 return View["About", base.Model];
-            };
-
-            Get["/bilinadminlogin"] = parameters => {
-                base.Page.Title = "管理员后台";
-                return View["Admin/Login", base.Model];
-            };
-
-            Post["/bilinadminlogin"] = parameters => {
-                Session["adminid"] = "abc";
-                return Response.AsRedirect("/bilinadmin/");
-            };
+            };          
 
             Get["/hubs.js"] = _ => {
                 //string str = @"var data_info = [

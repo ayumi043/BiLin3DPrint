@@ -49,13 +49,13 @@ namespace Bilin3d.Modules {
                 return null;
             };
 
-            Get["/order"] = parameters => {               
+            Get["/order"] = parameters => {
                 string stateid = Request.Query["state"].Value;
                 if (stateid != null) {
                     if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$")) {  //数量只能是大于0的数字
                         return null;
                     }
-                }               
+                }
 
                 string condition = " 1=1 ";
                 if (stateid != null) {
@@ -87,7 +87,7 @@ namespace Bilin3d.Modules {
                     left join t_material  t5 on t5.Id=t2.MaterialId
                     where {0}
                     order by t1.CreateTime desc", condition))
-                    //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
+                                          //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
                                           .GroupBy(i => i.OrderId)
                                           .ToDictionary(k => k.Key, v => v.ToList());
                 base.Page.Title = "所有订单";
@@ -95,6 +95,22 @@ namespace Bilin3d.Modules {
                 base.Model.Orders = orders;
                 //return View["Admin/Order", base.Model];
                 return View["Admin/Order", base.Model];
+            };
+
+        }
+    }
+
+    public class AdminLoginModule : BaseModule {
+        public AdminLoginModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) {
+                        
+            Get["/bilinadminlogin"] = parameters => {
+                base.Page.Title = "管理员后台";
+                return View["Admin/Login", base.Model];
+            };
+
+            Post["/bilinadminlogin"] = parameters => {
+                Session["adminid"] = "abc";
+                return Response.AsRedirect("/bilinadmin/");
             };
 
         }
