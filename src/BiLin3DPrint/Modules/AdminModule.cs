@@ -32,6 +32,14 @@ namespace Bilin3d.Modules {
                 return View["Admin/Index", Model];
             };
 
+            Get["/users"] = parameters => {
+                var users = db.Select<UserModel>("select * from T_User");
+                base.Page.Title = "用户";
+
+                return View["Admin/User/Index", Model];
+            };
+
+
             Get["/printer"] = parameters => {
                 Page.Title = "打印机";
                 return View["Admin/Printer/Index", Model];

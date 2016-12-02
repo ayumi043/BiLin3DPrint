@@ -333,8 +333,8 @@
                 <td class="col-md-3">材料名</td>
                 <td>颜色</td>
                 <td>精度</td>
-                <td>预计交货时间</td>
-                <td>数量</td>
+                @*<td>预计交货时间</td>
+                <td>数量</td>*@
                 <td>密度(克/立方厘米)</td>
                 <td>操作</td>
                 @*<td class="col-md-1"></td>*@
@@ -347,14 +347,14 @@
                 <td><a href="/material/{{item.materialId}}" target="_blank">{{item.name}}</a></td>
                 <td>{{item.color}}</td>
                 <td>{{item.accuracy}}</td>
-                <td>{{item.delivery}}</td>
+                @*<td>{{item.delivery}}</td>
                 <td>
                     <div>
                         <a class="prev">-</a>
                         <input class="num" type="text" disabled="disabled" value="1">
                         <a class="next">+</a>
                     </div>
-                </td>
+                </td>*@
                 <td>{{item.density}}</td>
                 <td><button class="btn btn-u" type="button" v-on:click="gethubs(item.materialId,index,$event)">选择</button></td>
                 @*<td><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>*@
@@ -373,25 +373,27 @@
         <div class="headline"><h2 class="heading">3. 选择打印供应商</h2> <span class="ssc">（<b>{{hublist.length}} </b>家供应商）</span></div>
 
         <table class="table text-center">
-            @*<tr class="active">
-                <td class="col-md-3">名称</td>
-                <td></td>
-                <td></td>
-                <td></td>               
-                <td></td>
+            <tr class="active">
+                <td style="width:70px;"></td>
+                <td style="text-align:left;">供应商名称</td>
+                <td>地址</td>
+                <td>电话</td>               
+                <td>QQ</td>
                 <td class="col-md-1"></td>
-            </tr>*@
+            </tr>
             <tr class="cartr" v-for="item in hublist
                                 | filterBy hub
                                 | limitBy pageSize pageSize*curPageMat">
-                <td style="width:70px;"><a href="#"><img style="width:50px;height:50px;" v-bind:src="item.logo==null ? 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png' : 'http://n.sinaimg.cn/sports/index1508/logo.png'"></a></td>
+                <td>
+                    <img style="width:50px;height:50px;" 
+                     v-bind:src="item.logo==null ? 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png' : 'http://n.sinaimg.cn/sports/index1508/logo.png'"></td>
                 <td style="text-align:left;">
                     <h3>{{item.fname}}</h3>
                 </td>
-                <td style="text-align:left;">
+                <td>
                     <div>{{item.address}}</div>
                 </td>
-                <td>{{item.tel}}</td>
+                <td>电话：{{item.tel}}</td>
                 <td>{{item.qq}}</td>
                 <td><button class="btn btn-u add-car" type="button" v-on:click="addcar(item.supplierId)" :disabled="!isupload">加入购物车</button></td>
             </tr>
