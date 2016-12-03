@@ -36,9 +36,11 @@ namespace Bilin3d.Modules {
                 string email = Request.Query["email"];
                 string strWhere = " 1=1 ";
                 if (email != null) {
-                    strWhere += $" and email like'%{email}%'";
+                    //strWhere += $" and email like '%{email}%' ";
+                    strWhere += $" and email like @email ";
                 }
-                var users = db.Select<UserModel>($"select * from T_User where {strWhere}");
+                //var users = db.Select<UserModel>($"select * from T_User where {strWhere}");
+                var users = db.Select<UserModel>($"select * from T_User where {strWhere}", new { email = "%" + email + "%", id = "" });
                 base.Page.Title = "用户";
 
                 Model.Users = users;
