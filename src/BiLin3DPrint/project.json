@@ -46,8 +46,7 @@
       "appsettings.json",
       "web.config",
 
-      "Public",
-      "Content"
+      "Public"
     ]
   },
 
