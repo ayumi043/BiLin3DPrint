@@ -43,6 +43,7 @@
         <table class="table table-striped table-bordered table-hover">
             <tr>
                 <th>email(登陆账号)</th>
+                <th>密码</th>
                 <th>昵称</th>
                 <th>电话</th>
                 <th>消费总额</th>
@@ -53,6 +54,7 @@
             @foreach (var user in Model.Users as List<UserModel>) {
             <tr class="odd gradeX">
                 <td>@user.Email</td>
+                <td>@user.PassWord</td>
                 <td>@user.NickName</td>
                 <td>@user.Tel</td>
                 <td class="center">@user.Expense.ToString("f2")</td>
