@@ -17,7 +17,7 @@ namespace Bilin3d.Models {
         public string PassWord { get; set; }
         public int PointTotal { get; set; }
         public int PointRemain { get; set; }
-        public int Expense { get; set; }
+        public decimal Expense { get; set; }
         public string Balance { get; set; }
         public int State { get; set; }   // 0.正常、1.停用、2.删除
         public string SupplierId { get; set; }

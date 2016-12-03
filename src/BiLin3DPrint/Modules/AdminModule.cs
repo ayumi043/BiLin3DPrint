@@ -33,12 +33,52 @@ namespace Bilin3d.Modules {
             };
 
             Get["/users"] = parameters => {
-                var users = db.Select<UserModel>("select * from T_User");
+                string email = Request.Query["email"];
+                string strWhere = " 1=1 ";
+                if (email != null) {
+                    strWhere += $" and email like'%{email}%'";
+                }
+                var users = db.Select<UserModel>($"select * from T_User where {strWhere}");
                 base.Page.Title = "用户";
 
+                Model.Users = users;
                 return View["Admin/User/Index", Model];
             };
 
+            Post["/user/{id}-{state}"] = parameters => {
+                var id = parameters.id;
+                string state = parameters.state;
+                List<string> states = new List<string> { "0", "1", "2" };
+                if (states.IndexOf(state) < 0) {
+                    return Response.AsJson(new { message = "error" }, HttpStatusCode.BadRequest);
+                }
+                db.ExecuteNonQuery($"update t_user set state='{state}' where id={id};");
+                return Response.AsJson(new { message = "success" });
+            };
+
+            Get["/suppliers"] = parameters => {
+                string email = Request.Query["email"];
+                string strWhere = " 1=1 ";
+                if (email != null) {
+                    strWhere += $" and email like'%{email}%'";
+                }
+                var users = db.Select<UserModel>($"select * from T_Supplier where {strWhere}");
+                base.Page.Title = "用户";
+
+                Model.Users = users;
+                return View["Admin/User/Index", Model];
+            };
+
+            Post["/supplier/{id}-{state}"] = parameters => {
+                var id = parameters.id;
+                string state = parameters.state;
+                List<string> states = new List<string> { "0", "1", "2" };
+                if (states.IndexOf(state) < 0) {
+                    return Response.AsJson(new { message = "error" }, HttpStatusCode.BadRequest);
+                }
+                db.ExecuteNonQuery($"update t_user set state='{state}' where id={id};");
+                return Response.AsJson(new { message = "success" });
+            };
 
             Get["/printer"] = parameters => {
                 Page.Title = "打印机";
