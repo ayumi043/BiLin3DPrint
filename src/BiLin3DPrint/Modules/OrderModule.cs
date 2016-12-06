@@ -212,7 +212,11 @@ namespace Bilin3d.Modules {
                         //DateTime.TryParseExact(result.Item2.GetValue("time_end").ToString(), "yyyyMMddHHmmss", null, System.Globalization.DateTimeStyles.None, out payTime);
                         db.ExecuteNonQuery($@"update t_order set StateId=2, PayFrom=1, PayOrderId='{result.Item2.GetValue("transaction_id")}', 
                                                 PayTime='{result.Item2.GetValue("time_end")}', EditTime=NOW()
-                                            where OrderId=@OrderId;", new { UserId = Page.UserId, OrderId = orderId });
+                                            where OrderId=@OrderId;
+                                            update t_user set Expense=Expense+(select Amount from t_order where OrderId=@OrderId),
+                                                PointRemain=PointRemain+(select Amount from t_order where OrderId=@OrderId),
+                                                PointTotal=PointTotal+(select Amount from t_order where OrderId=@OrderId) where UserId=@UserId;"
+                                            , new { UserId = Page.UserId, OrderId = orderId });
                     }
                     return null;
                 };
