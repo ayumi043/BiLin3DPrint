@@ -492,21 +492,6 @@ namespace Bilin3d.Modules {
             };
 
             Get["/order"] = parameters => {
-                string stateid = Request.Query["state"].Value;
-                if (stateid != null) {
-                    if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$")) {
-                        throw new Exception("stateid只能是大于0的数字");
-                        //return null;
-                    }
-                }
-
-                string condition = " and 1=1 ";
-                if (stateid != null) {
-                    condition = string.Format(@" and t3.Id='{0}' ", stateid);
-                }
-
-                var orderStates = db.Select<OrderStateModel>(string.Format(@"
-                    select id,statename from t_orderstate"));
                 var orders = db.Select<OrderModel>($@"
                     select t1.OrderId,
                         t1.Express,
@@ -529,7 +514,7 @@ namespace Bilin3d.Modules {
                     left join t_address  t4 on t4.Id=t1.AddressId
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
                     left join t_user t6 on t6.SupplierId=t2.SupplierId
-                    where t6.Id='{Page.UserId}' {condition} and t3.id=2
+                    where t6.Id='{Page.UserId}' and t3.id=2
                     order by t1.CreateTime desc")
                     //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
                     .GroupBy(i => i.OrderId)
@@ -546,8 +531,10 @@ namespace Bilin3d.Modules {
             return db.Scalar<int>($@"
                     select count(1) 
                     from t_order t1
-                    join t_orderstate t2 on t2.Id=t1.StateId 
-                    where t1.UserId='{Page.UserId}' and t2.Id=2");
+                    join t_orderdetail t3 on t3.OrderId=t1.OrderId
+                    join t_user t4 on t4.Id=t1.UserId
+                    join t_supplier t5 on t5.SupplierId=t4.SupplierId
+                    where t1.UserId='{Page.UserId}' and t1.StateId=2");
         }
     }
 }

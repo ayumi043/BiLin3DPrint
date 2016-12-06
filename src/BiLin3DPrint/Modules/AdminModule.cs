@@ -42,7 +42,6 @@ namespace Bilin3d.Modules {
                 //var users = db.Select<UserModel>($"select * from T_User where {strWhere}");
                 var users = db.Select<UserModel>($"select * from T_User where {strWhere}", new { email = "%" + email + "%", id = "" });
                 base.Page.Title = "用户";
-
                 Model.Users = users;
                 return View["Admin/User/Index", Model];
             };
@@ -59,16 +58,15 @@ namespace Bilin3d.Modules {
             };
 
             Get["/suppliers"] = parameters => {
-                string email = Request.Query["email"];
+                string suppliername = Request.Query["suppliername"];
                 string strWhere = " 1=1 ";
-                if (email != null) {
-                    strWhere += $" and email like'%{email}%'";
+                if (suppliername != null) {
+                    strWhere += $" and (fname like @suppliername or CompanyName like @suppliername)";
                 }
-                var users = db.Select<UserModel>($"select * from T_Supplier where {strWhere}");
-                base.Page.Title = "用户";
-
-                Model.Users = users;
-                return View["Admin/User/Index", Model];
+                var suppliers = db.Select<SupplierModel>($"select * from T_Supplier where {strWhere}", new { suppliername = "%" + suppliername + "%" });
+                base.Page.Title = "供应商";
+                Model.Suppliers = suppliers;
+                return View["Admin/Supplier/Index", Model];
             };
 
             Post["/supplier/{id}-{state}"] = parameters => {
@@ -78,7 +76,7 @@ namespace Bilin3d.Modules {
                 if (states.IndexOf(state) < 0) {
                     return Response.AsJson(new { message = "error" }, HttpStatusCode.BadRequest);
                 }
-                db.ExecuteNonQuery($"update t_user set state='{state}' where id={id};");
+                db.ExecuteNonQuery($"update T_Supplier set state='{state}' where supplierId='{id}';");
                 return Response.AsJson(new { message = "success" });
             };
 
