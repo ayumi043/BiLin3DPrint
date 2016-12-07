@@ -145,6 +145,11 @@ namespace Bilin3d.Modules {
                 return View["Admin/Order", base.Model];
             };
 
+            Get[""] = _ => {
+                return Response.AsRedirect("");
+            };
+            
+
         }
     }
 

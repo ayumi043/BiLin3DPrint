@@ -189,6 +189,12 @@ namespace Bilin3d.Modules {
                 }
                 return Response.AsJson(new { message = "error" });
             };
+
+            Get["paysuccess"] = _ => {
+                base.Page.Title = "付款成功！";
+                return View["PaySuccess", base.Model];
+            };
+
         }
 
         public class NativeNotifyModule : BaseModule {
@@ -215,8 +221,8 @@ namespace Bilin3d.Modules {
                                             where OrderId=@OrderId;
                                             update t_user set Expense=Expense+(select Amount from t_order where OrderId=@OrderId),
                                                 PointRemain=PointRemain+(select Amount from t_order where OrderId=@OrderId),
-                                                PointTotal=PointTotal+(select Amount from t_order where OrderId=@OrderId) where UserId=@UserId;"
-                                            , new { UserId = Page.UserId, OrderId = orderId });
+                                                PointTotal=PointTotal+(select Amount from t_order where OrderId=@OrderId) where Id=(select UserId from t_order where OrderId=@OrderId);"
+                                            , new { OrderId = orderId });
                     }
                     return null;
                 };

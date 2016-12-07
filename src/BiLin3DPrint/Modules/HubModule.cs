@@ -496,7 +496,7 @@ namespace Bilin3d.Modules {
                     select t1.OrderId,
                         t1.Express,
                         t1.CreateTime,
-                        t1.Amount,
+                        t2.Amount,
                         t2.Area,
                         t2.Size,
                         t2.Volume,
@@ -515,7 +515,7 @@ namespace Bilin3d.Modules {
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
                     left join t_user t6 on t6.SupplierId=t2.SupplierId
                     where t6.Id='{Page.UserId}' and t3.id=2
-                    order by t1.CreateTime desc")
+                    order by t1.EditTime desc")
                     //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
                     .GroupBy(i => i.OrderId)
                     .ToDictionary(k => k.Key, v => v.ToList());
@@ -530,11 +530,14 @@ namespace Bilin3d.Modules {
         private int CountNoAudit(IDbConnection db) {
             return db.Scalar<int>($@"
                     select count(1) 
-                    from t_order t1
-                    join t_orderdetail t3 on t3.OrderId=t1.OrderId
-                    join t_user t4 on t4.Id=t1.UserId
-                    join t_supplier t5 on t5.SupplierId=t4.SupplierId
-                    where t1.UserId='{Page.UserId}' and t1.StateId=2");
+                    from(
+                        select t1.OrderId 
+                        from t_order t1
+                        join t_orderdetail t3 on t3.OrderId=t1.OrderId
+                        join t_user t4 on t4.Id=t1.UserId
+                        join t_supplier t5 on t5.SupplierId=t3.SupplierId
+                        where t1.UserId='{Page.UserId}' and (t1.StateId=2 or t1.StateId=5)
+                        group by t1.OrderId) a");
         }
     }
 }
