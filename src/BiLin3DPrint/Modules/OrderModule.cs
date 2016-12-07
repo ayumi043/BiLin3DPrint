@@ -172,12 +172,13 @@ namespace Bilin3d.Modules {
             Get["pay/{orderId}"] = parameters => {
                 Page.Title = "付款";
                 var orderId = parameters.orderId;
-                var order = db.Single<string>("select 1 from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
-                if (order == null) {                    
+                var amount = db.Single<string>("select amount from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
+                if (amount == null) {                    
                     return "订单号出错, 可能是订单号已完成付款，或订单号不存在!";
                 }
 
                 Model.orderId = orderId;
+                Model.amount = decimal.Parse(amount).ToString("f2");
                 return View["Pay", base.Model];
             };
 

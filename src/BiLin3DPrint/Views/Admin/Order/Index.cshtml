@@ -1,0 +1,135 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using System.Collections.Generic;
+@using Bilin3d.Models;
+
+@{
+    Layout = "_Layout.cshtml";
+}
+
+@section Css{
+    <style>
+        .order-border {
+            border-bottom: 1px solid #dcdcdc;padding:12px 0px 12px 0px;
+        }
+    </style>
+}
+
+@section Javascript{
+    <script>
+        $(function () {
+            $('.hoverSelector').on('hover', function (e) {
+                $('.hoverSelectorBlock', this).toggle('show');
+                e.stopPropagation();
+            });
+        });
+
+        function ModifyState(orderid) {
+            $.post("./orderState/" + orderid, function (data) {
+                if (data.message === "success") {
+                    alert("已审核通过");
+                    location.reload();
+                }
+            });
+        }
+    </script>
+}
+
+<div class="row">
+<div class="col-lg-12">
+    <h1 class="page-header">订单</h1>
+</div>
+<!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+<div class="row">
+<div class="col-lg-12">      
+    <table class="table" style="border-top:0px;">
+        <tr class="active" style="color:gray;">
+            <td class="text-center">订单详情</td>
+            <td class="text-center" style="width:300px;">收货人</td>
+            <td class="text-center" style="width:130px;">总计</td>
+            <td class="text-center" style="width:180px;">
+                       
+                <!-- Single button -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @if (Request.Query["name"] == null) {
+                            <text>全部状态</text>
+                        } else {
+                            @Request.Query["name"]
+                        }
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li @if (Request.Query["state"] == null) { <text> class="active" </text> }><a href="/bilinadmin/order">全部状态</a></li>
+                        @foreach (var item in Model.OrderStates) {
+                            <li @if (Request.Query["state"].Value == item.Id.ToString()) { <text> class="active" </text>  }><a href="/bilinadmin/order?state=@item.Id&name=@item.StateName">@item.StateName</a></li>
+                        }
+                    </ul>
+                </div>
+
+            </td>
+        </tr>
+    </table>
+    @foreach (var item in Model.Orders as Dictionary<string, List<OrderModel>>) {
+        <table class="table table-bordered ordertable">
+            @{
+                var createtime = item.Value[0].CreateTime;
+                var consignee = item.Value[0].Consignee;
+                var statename = item.Value[0].StateName;
+                var stateid = item.Value[0].StateId;
+                var amount = item.Value[0].Amount;
+                var address = item.Value[0].Address;
+                var payOrderId = item.Value[0].PayOrderId;
+                var payName = item.Value[0].payName;
+            }
+            <tr class="active" style="color:gray;">
+                <td colspan="4">
+                    订单号：<a>@item.Key</a>
+                    @if (payOrderId != null) {
+                        <div style="float:right;padding-right:30px;font-weight:bold;"><span style="padding-left:50px;">付款方式： @payName</span><span style="padding-left:32px;">微信订单编号： @payOrderId</span></div>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @{
+                        var count = item.Value.Count;
+                        var index = 0;
+                    }
+                    @foreach (var ev in item.Value) {
+                        index++;
+                        var filename = ev.FileName.Split('$');
+                        <div style="float:right;padding:0px 200px 0px 0px;color:gray;">x @ev.Num</div>
+                        <div @if (index < count) { <text> class="order-padding order-border" </text>    } else { <text> style="padding-bottom:0px;margin-bottom:0px;" class="order-padding" </text>    }>
+                            <div>文件：<a target="_blank" href="~/Content/uploads/3d/@ev.FileName" download="@filename[filename.Length - 1]">@filename[filename.Length - 1]</a></div>
+                            <div>尺寸：@ev.Size</div>
+                            <div>表面积：@ev.Area</div>
+                            <div>体积：@ev.Volume</div>
+                            <div>重量：@ev.Weight 克</div>
+                        </div>
+                    }
+
+                </td>
+                <td style="width:300px;">
+                    <div style="width:280px;padding:0px 10px 0px 10px;word-break:break-all;">
+                        <p>收货人:@consignee</p>
+                        <p>地址:@address</p>
+                    </div>
+                </td>
+                <td class="text-center" style="width:130px;"><b>￥@amount.ToString("f2")</b></td>
+                <td class="text-center" style="width:180px;padding:16px 12px 0px 12px !important;">
+                    @statename
+                    @if (stateid == "2") {
+                        <div style="margin-top:10px;"><button type="button" onclick="ModifyState('@item.Key')" class="btn-u btn-u-sm btn-sm" style="width:80px;font-size:14px;">通过审核</button></div>
+                        <div>（让供应商安排生产）</div>
+                    }                    
+                </td>
+            </tr>
+
+        </table>
+    }  
+</div>
+<!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->     

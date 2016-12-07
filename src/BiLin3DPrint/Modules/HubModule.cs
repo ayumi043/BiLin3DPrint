@@ -514,7 +514,7 @@ namespace Bilin3d.Modules {
                     left join t_address  t4 on t4.Id=t1.AddressId
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
                     left join t_user t6 on t6.SupplierId=t2.SupplierId
-                    where t6.Id='{Page.UserId}' and t3.id=2
+                    where t6.Id='{Page.UserId}'
                     order by t1.EditTime desc")
                     //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
                     .GroupBy(i => i.OrderId)

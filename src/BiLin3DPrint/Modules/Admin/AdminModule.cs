@@ -20,7 +20,7 @@ namespace Bilin3d.Modules {
             Before += ctx => {
                 if (Session["adminid"] == null) {
                     //return null;
-                    //return Response.AsRedirect("/bilinadminlogin");
+                    return Response.AsRedirect("/bilinadminlogin");
                 }
                 return null;
             };
@@ -29,7 +29,8 @@ namespace Bilin3d.Modules {
                 var users = db.Select<UserModel>("select * from T_User");
                 base.Page.Title = "Home";
 
-                return View["Admin/Index", Model];
+                //return View["Admin/Index", Model];
+                return Response.AsRedirect("./order");
             };
 
             Get["/users"] = parameters => {
@@ -114,9 +115,12 @@ namespace Bilin3d.Modules {
                     select id,statename from t_orderstate"));
                 var orders = db.Select<OrderModel>(string.Format(@"
                     select t1.OrderId,
-                        t1.Express,
+                        t1.payFrom,
+                        t6.Name as payName,
+                        t1.PayOrderId,
                         t1.CreateTime,
                         t1.Amount,
+                        t2.Express,
                         t2.Area,
                         t2.Size,
                         t2.Volume,
@@ -127,26 +131,31 @@ namespace Bilin3d.Modules {
                         t3.StateName,
                         t3.Id as StateId,
                         t4.Consignee,
-                        t4.Address 
+                        t4.Address
                     from t_order  t1
                     left join t_orderdetail  t2 on t2.OrderId=t1.OrderId
                     left join t_orderstate   t3 on t3.Id=t1.StateId
                     left join t_address  t4 on t4.Id=t1.AddressId
-                    left join t_material  t5 on t5.Id=t2.MaterialId
+                    left join t_material  t5 on t5.MaterialId=t2.MaterialId
+                    left join t_pay t6 on t6.id=t1.payfrom
                     where {0}
-                    order by t1.CreateTime desc", condition))
-                                          //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
-                                          .GroupBy(i => i.OrderId)
-                                          .ToDictionary(k => k.Key, v => v.ToList());
+                    order by t1.EditTime desc", condition))
+                        //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
+                        .GroupBy(i => i.OrderId)
+                        .ToDictionary(k => k.Key, v => v.ToList());
                 base.Page.Title = "所有订单";
                 base.Model.OrderStates = orderStates;
                 base.Model.Orders = orders;
-                //return View["Admin/Order", base.Model];
-                return View["Admin/Order", base.Model];
+                return View["Admin/Order/Index", base.Model];
             };
 
-            Get[""] = _ => {
-                return Response.AsRedirect("");
+            Post["/orderState/{orderid}"] = parameters => {
+                var orderId = parameters.orderId;
+                var i = db.ExecuteNonQuery("update t_order set StateId='5' where OrderId=@OrderId;", new { OrderId = orderId });
+                if (i > 0) {
+                    return Response.AsJson(new { message = "success" });
+                }
+                return Response.AsJson(new { message = "error" }, HttpStatusCode.BadRequest);
             };
             
 
@@ -162,7 +171,11 @@ namespace Bilin3d.Modules {
             };
 
             Post["/bilinadminlogin"] = parameters => {
-                Session["adminid"] = "abc";
+                string username = Request.Form.username;
+                string password = Request.Form.password;
+                if (username == "bilin3d" && password == "bilin3d2013") {
+                    Session["adminid"] = "bilin";
+                }                
                 return Response.AsRedirect("/bilinadmin/");
             };
 

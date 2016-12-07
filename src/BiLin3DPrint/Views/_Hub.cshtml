@@ -17,12 +17,12 @@
                     <span class="badge badge-u">@Model.countNoAudit</span>
                     <a href="/hub/order"> 我的订单</a>
                 </li>
-                <li @if (Request.Path.ToLower().Contains("balance")){<text> class="active" </text>}>
+                @*<li @if (Request.Path.ToLower().Contains("balance")){<text> class="active" </text>}>
                     <a href="/hub/balance"> 账户余额</a>
                 </li>
                 <li @if (Request.Path.ToLower().Contains("withdraw")){<text> class="active" </text>}>
                     <a href="/hub/withdraw"> 提现</a>
-                </li>
+                </li>*@
                 <li>
                     <span class="badge badge-u">New</span>
                     <a href="#"> 积分</a>

@@ -26,8 +26,9 @@ namespace Bilin3d.Models
         public string SupplierName { get; set; }    
         
         public int PayFrom { get; set; }
+        public string payName { get; set; }
         public string PayOrderId { get; set; }
-        public DateTime PayTime { get; set; }               
+        public DateTime PayTime { get; set; }
     }
 
 

@@ -135,7 +135,10 @@
                                     <div>表面积：@ev.Area</div>
                                     <div>体积：@ev.Volume</div>
                                     <div>重量：@ev.Weight 克</div>
-                                    <div>价格：￥@ev.Amount</div>
+                                    <div style="font-size:15px;font-weight:bold;">价格：￥@ev.Amount.ToString("f2")</div>
+                                    @if (stateid == "5") {
+                                        <div style="margin-top:12px;"><button type="button" class="btn-u btn-u-sm btn-sm" style="width:80px;font-size:14px;">我要发货</button>（填写快递信息）</div>
+                                    }
                                 </div>
                             }
 
@@ -148,9 +151,6 @@
                         </td>
                         <td class="text-center" style="width:180px;padding:16px 12px 0px 12px !important;">
                             @statename
-                            @if (stateid == "1") {
-                                <div><button type="button" class="btn-u btn-u-sm btn-sm" style="width:80px;font-size:14px;">立即付款</button></div>
-                            }
                         </td>
                     </tr>
 

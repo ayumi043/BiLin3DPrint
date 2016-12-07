@@ -43,20 +43,21 @@
 }
 
 <div class="row" style="padding:0px 15px 0px 15px;margin-top:-30px;">
-    <h3>订单号:@Model.orderId</h3>
+    @*<h3>订单号:@Model.orderId</h3>*@
     <div>
         <div class="modal-content" style="box-shadow:none;">
             <div class="modal-header">
-                <h4 id="myModalLabel1" class="modal-title">微信支付</h4>
+                <h4 id="myModalLabel1" class="modal-title">订单号:@Model.orderId   <span style="padding-left:350px;font-weight:bold;">应付金额: @Model.amount</span></h4>
             </div>
             <div class="modal-body">
-                <p>请打开微信，扫描下方二维码，完成支付！</p>
+                <p><img src="/images/wxpay/WePayLogo.png" style="width:130px;"  /></p>
                 <p>
-                    <img src="/order/qrcode/@Model.orderId" alt="" />
+                    <img src="/order/qrcode/@Model.orderId" alt="" style="width:180px;margin:0px 0px 0px 100px;" />
                 </p>
+                <p><img src="/images/wxpay/sm.png" style="width:180px;margin:0px 0px 0px 100px;" /></p>
                 <p>支付完后，订单状态更新可能会有几秒的延迟!</p>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="text-align:left;">
                 <a data-dismiss="modal" class="btn-u" href="/order">已完成支付</a>
             </div>
         </div>
