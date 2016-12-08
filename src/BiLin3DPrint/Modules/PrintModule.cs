@@ -112,7 +112,6 @@ namespace Bilin3d.Modules {
             };
 
             Get["/suppliers"] = parameters => {
-
                 string materialid = Request.Query["materialid"].Value;
                 string _distance = Request.Query["distance"].Value;
                 double distance = 20000;
@@ -132,8 +131,8 @@ namespace Bilin3d.Modules {
                     lat = double.Parse(m["point"]["y"].ToString()); //纬度
                 }
 
-                lng = 118.645297;
-                lat = 24.879442;
+                //lng = 118.645297;
+                //lat = 24.879442;
 
                 double range = 180 / Math.PI * distance / 6372.797; //distance代表距离，单位是km
                 double lngR = range / Math.Cos(lat * Math.PI / 180.0);
@@ -144,9 +143,10 @@ namespace Bilin3d.Modules {
 
                 //暂时精确到供应商，不精确到供应商的打印机
                 string sql = $@"
-                    SELECT t1.supplierId,t1.fname,address,tel,qq,logo 
+                    SELECT t1.supplierId,t1.fname,address,tel,qq,logo,t2.Price 
                     FROM t_supplier t1
                     join t_supplier_printer_material t2 on t2.supplierId=t1.supplierId
+                    join t_printcomplete t3 on t3.completeid=t2.completeid                
                     WHERE ((lat BETWEEN '{minLat}' AND '{maxLat}') AND (lng BETWEEN '{minLng}' AND '{maxLng}'))
                         and t2.MaterialId=@MaterialId
                     Group by t1.supplierId,t1.fname,address,tel,qq,logo;";

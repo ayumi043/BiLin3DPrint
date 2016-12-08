@@ -376,6 +376,9 @@
             <tr class="active">
                 <td style="width:70px;"></td>
                 <td style="text-align:left;">供应商名称</td>
+                <td>交货周期</td>
+                <td>价格</td>
+                <td>打印数量</td>
                 <td>地址</td>
                 <td>电话</td>               
                 <td>QQ</td>
@@ -384,12 +387,15 @@
             <tr class="cartr" v-for="item in hublist
                                 | filterBy hub
                                 | limitBy pageSize pageSize*curPageMat">
-                <td>
-                    <img style="width:50px;height:50px;" 
+                <td valign="top">
+                    <img style="width:30px;height:30px;" 
                      v-bind:src="item.logo==null ? 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png' : 'http://n.sinaimg.cn/sports/index1508/logo.png'"></td>
                 <td style="text-align:left;">
-                    <h3>{{item.fname}}</h3>
+                    <span style="font-weight:bold;">{{item.fname}}</span>
                 </td>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
                 <td>
                     <div>{{item.address}}</div>
                 </td>
