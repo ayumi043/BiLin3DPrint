@@ -8,6 +8,7 @@ namespace Bilin3d.Models
 {
     public class OrderModel {
         public string OrderId { get; set; }
+        public string OrderDetailId { get; set; }
         public string StateId { get; set; }
         public DateTime CreateTime { get; set; }
         public decimal Amount { get; set; }

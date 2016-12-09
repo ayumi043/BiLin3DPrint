@@ -46,5 +46,8 @@ namespace Bilin3d.Models
         public string Delivery { get; set; }
         public int CarDetailId { get; set; }
         public string CarId { get; set; }
+
+        public string SupplierPrinterMaterialId { get; set; }
+
     }
 }

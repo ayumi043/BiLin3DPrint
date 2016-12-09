@@ -239,13 +239,13 @@ namespace Bilin3d.Modules {
 		                            '{5}',
 		                            '{6}',
 		                            '{7}',
-		                            (SELECT Price FROM T_Material WHERE MaterialId={7}),
+		                            (SELECT Price FROM t_supplier_printer_material WHERE id='{9}'),
                                     (SELECT Density*{3} FROM T_Material WHERE MaterialId={7}),
 		                            NOW(),
                                     '{8}'
 	                            );
                             
-                            ", base.Page.UserId, carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId,model.SupplierId);
+                            ", base.Page.UserId, carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId,model.SupplierId,model.SupplierPrinterMaterialId);
                     } else {
                         sql = string.Format(@"select 1 from T_CarDetail where MaterialId={0} and FileName='{1}'", model.MaterialId, model.FileName);
                         var materialid = db.Select<string>(sql).FirstOrDefault();
@@ -273,12 +273,12 @@ namespace Bilin3d.Modules {
 		                            '{4}',
 		                            '{5}',
 		                            '{6}',
-		                            (SELECT Price FROM T_Material WHERE MaterialId={6}),
+		                            (SELECT Price FROM t_supplier_printer_material WHERE id='{8}'),
                                     (SELECT Density*{2} FROM T_Material WHERE MaterialId={6}),
 		                            NOW(),
                                     '{7}'
 	                            );                            
-                            ", carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId,model.SupplierId);
+                            ", carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId, model.SupplierId, model.SupplierPrinterMaterialId);
                         } else {
                             sql = string.Format(@"update T_CarDetail set EditTime=NOW(), Num={0} where MaterialId={1} and FileName='{2}';", model.Num, model.MaterialId, model.FileName);
                         }
@@ -289,16 +289,9 @@ namespace Bilin3d.Modules {
                     //更新主表总金额Amount字段
                     sql = sql + string.Format(@"
                        UPDATE T_CarDetail t1
-                       SET EditTime = NOW(),
-                           Amount = (
-	                            SELECT SUM(t1.Price * t1.Num) 
-	                            FROM T_Material mat 
-                                where mat.MaterialId = t1.MaterialId                                
-                           )
+                       SET EditTime = NOW(),Amount = t1.Price * t1.Num
                         WHERE t1.CarId='{0}';
-
-                        update T_Car set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetail where CarId='{0}') where CarId='{0}'
-                        ", carid);
+                        update T_Car set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetail where CarId='{0}') where CarId='{0}';", carid);
                     var num = db.ExecuteNonQuery(sql);
                 } else {  // 未登陆
                     string sql = string.Format(@"SELECT CarId FROM T_CarTemp WHERE UserId='{0}';", Session["TempUserId"].ToString());
@@ -329,12 +322,12 @@ namespace Bilin3d.Modules {
 		                            '{5}',
 		                            '{6}',
 		                            '{7}',
-		                            (SELECT Price FROM T_Material WHERE Id={7}),
+		                            (SELECT Price FROM t_supplier_printer_material WHERE id='{9}'),
                                     (SELECT Density*{3} FROM T_Material WHERE Id={7}),
 		                            NOW(),
                                     '{8}'
 	                            );                            
-                            ", Session["TempUserId"].ToString(), carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId,model.SupplierId);
+                            ", Session["TempUserId"].ToString(), carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId,model.SupplierId,model.SupplierPrinterMaterialId);
                     } else {
                         sql = string.Format(@"select 1 from T_CarDetailTemp where MaterialId={0} and FileName='{1}'", model.MaterialId, model.FileName);
                         var materialid = db.Select<string>(sql).FirstOrDefault();
@@ -361,11 +354,11 @@ namespace Bilin3d.Modules {
 		                            '{4}',
 		                            '{5}',
 		                            '{6}',
-		                            (SELECT Price FROM T_Material WHERE MaterialId={6}),
+		                            (SELECT Price FROM t_supplier_printer_material WHERE id='{7}'),
                                     (SELECT Density*{2} FROM T_Material WHERE MaterialId={6}),
 		                            NOW()
 	                            );                            
-                            ", carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId);
+                            ", carid, model.FileName, model.Volume, model.Area, model.Size, model.Num, model.MaterialId,model.SupplierPrinterMaterialId);
                         } else {
                             sql = string.Format(@"update T_CarDetailTemp set Num={0},EditTime=NOW() where MaterialId={1} and FileName='{2}';", model.Num, model.MaterialId, model.FileName);
                         }
@@ -376,14 +369,9 @@ namespace Bilin3d.Modules {
                     sql = sql + string.Format(@"
                         UPDATE T_CarDetailTemp t1
                         SET EditTime = NOW(),
-                            Amount = (
-	                            SELECT SUM(t1.Price * t1.Num)
-	                            FROM T_Material mat where mat.MaterialId = t1.MaterialId                                
-                            )
+                            Amount = t1.Price * t1.Num
                         WHERE t1.CarId='{0}';
-
-                        update T_CarTemp set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetailTemp where CarId='{0}') where CarId='{0}'
-                        ", carid);
+                        update T_CarTemp set EditTime=NOW(), Amount=(select SUM(Amount) from T_CarDetailTemp where CarId='{0}') where CarId='{0}';", carid);
                     var num = db.ExecuteNonQuery(sql);
 
                     Session["CarAdded"] = "1"; // 表示已加入临时购物车了， 用于在登录/注册成功后，转换成正式用户购物车时判断（ConvertTempCar），避免一次数据库操作；

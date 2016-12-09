@@ -487,16 +487,13 @@ namespace Bilin3d.Modules {
                 return Response.AsText("账户余额", "text/html; charset=utf-8");
             };
 
-            Get["/withdraw"] = parameters => {
-                return Response.AsText("取现", "text/html; charset=utf-8");                
-            };
-
             Get["/order"] = parameters => {
                 var orders = db.Select<OrderModel>($@"
                     select t1.OrderId,
                         t1.Express,
                         t1.CreateTime,
                         t2.Amount,
+                        t2.id as OrderDetailId,
                         t2.Area,
                         t2.Size,
                         t2.Volume,
@@ -525,6 +522,18 @@ namespace Bilin3d.Modules {
                 base.Model.countNoAudit = CountNoAudit(db);
                 return View["Order", base.Model];
             };
+
+            Post["/order/express/{orderdetailId}"] = parameters => {
+                string orderdetailId = parameters.orderdetailId;
+                string express = Request.Form.express;
+                int i = db.ExecuteNonQuery("update t_orderdetail set express=@express where id=@orderdetailId", 
+                    new { express=express, orderdetailId= orderdetailId });
+                if (i > 0) {
+                    return Response.AsJson(new { message = "success" });
+                }
+                return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
+            };
+            
         }
 
         private int CountNoAudit(IDbConnection db) {

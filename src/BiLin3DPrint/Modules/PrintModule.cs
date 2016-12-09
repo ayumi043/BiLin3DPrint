@@ -143,21 +143,24 @@ namespace Bilin3d.Modules {
 
                 //暂时精确到供应商，不精确到供应商的打印机
                 string sql = $@"
-                    SELECT t1.supplierId,t1.fname,address,tel,qq,logo,t2.Price 
+                    SELECT t1.supplierId,t1.fname,address,tel,qq,logo,t2.Price as MatPrice,t3.fname as PrintCompleteName,t2.id as SupplierPrinterMaterialId
                     FROM t_supplier t1
                     join t_supplier_printer_material t2 on t2.supplierId=t1.supplierId
                     join t_printcomplete t3 on t3.completeid=t2.completeid                
                     WHERE ((lat BETWEEN '{minLat}' AND '{maxLat}') AND (lng BETWEEN '{minLng}' AND '{maxLng}'))
-                        and t2.MaterialId=@MaterialId
+                        and t2.MaterialId=@MaterialId and t1.state='0'
                     Group by t1.supplierId,t1.fname,address,tel,qq,logo;";
-                var suppliers = db.Select<SupplierModel>(sql, new { MaterialId = materialid });
+                var suppliers = db.Select<SupplierWithCompletePriceModel>(sql, new { MaterialId = materialid });
                 return Response.AsJson(suppliers.Select(i => new {
                     supplierId = i.SupplierId,
                     fname = i.Fname,
                     address = i.Address,
                     tel = i.Tel,
                     qq = i.QQ,
-                    logo = i.Logo
+                    logo = i.Logo,
+                    matprice = i.MatPrice,
+                    printcompletename = i.PrintCompleteName,
+                    supplierprintermaterialid =i.SupplierPrinterMaterialId
                 }));
 
             };
