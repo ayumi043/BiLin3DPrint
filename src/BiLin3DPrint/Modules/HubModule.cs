@@ -490,7 +490,6 @@ namespace Bilin3d.Modules {
             Get["/order"] = parameters => {
                 var orders = db.Select<OrderModel>($@"
                     select t1.OrderId,
-                        t1.Express,
                         t1.CreateTime,
                         t2.Amount,
                         t2.id as OrderDetailId,
@@ -500,6 +499,7 @@ namespace Bilin3d.Modules {
                         t2.Weight,
                         t2.FileName,
                         t2.Num,
+                        t2.Express,
                         t5.name as MatName,
                         t3.StateName,
                         t3.Id as StateId,

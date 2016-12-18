@@ -92,12 +92,15 @@
                             var filename = ev.FileName.Split('$');
                             <div style="float:right;padding:55px 200px 0px 0px;color:gray;">x @ev.Num</div>
                             <div @if (index < count) { <text> class="order-padding order-border" </text>   } else { <text> style="padding-bottom:0px;margin-bottom:0px;" class="order-padding" </text>   }>
-                                <h4>供应商：@ev.SupplierName</h4>
+                                <h4>供应商：@ev.SupplierName  @if (!string.IsNullOrEmpty(ev.Express)) {<span style="color:red;font-size:15px;padding-left:20px;">【已发货】</span> }</h4>
                                 <div>文件：<a target="_blank" href="~/Content/uploads/3d/@ev.FileName" download="@filename[filename.Length - 1]">@filename[filename.Length - 1]</a></div>
                                 <div>尺寸：@ev.Size</div>
                                 <div>表面积：@ev.Area</div>
                                 <div>体积：@ev.Volume</div>
                                 <div>重量：@ev.Weight 克</div>
+                                @if (!string.IsNullOrEmpty(ev.Express)) {
+                                    <div style="padding:3px 0px 8px 0px;"><span style="color:red;">快递信息：</span>@ev.Express</div>
+                                }
                             </div>
                         }
 

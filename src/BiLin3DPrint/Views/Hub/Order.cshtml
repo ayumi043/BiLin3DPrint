@@ -144,7 +144,7 @@
                                 var count = item.Value.Count;
                                 var index = 0;
                             }
-                            @foreach (var ev in item.Value) {
+                            @foreach (var ev in item.Value as List<OrderModel>) {
                                 index++;
                                 var filename = ev.FileName.Split('$');
                                 <div style="float:right;padding:0px 160px 0px 0px;color:gray;">x @ev.Num</div>
@@ -155,7 +155,7 @@
                                     <div>体积：@ev.Volume</div>
                                     <div>重量：@ev.Weight 克</div>
                                     <div>价格：￥@ev.Amount.ToString("f2")</div>
-                                    @if (stateid == "5") {
+                                    @if (stateid == "5" && string.IsNullOrEmpty( ev.Express) == true) {
                                         <div class="express" style="margin:12px 0px 10px 0px;">
                                             <button type="button" class="btn-u btn-u-sm btn-sm showexpress" style="width:80px;font-size:14px;">我要发货</button>（填写快递信息）
                                         </div>
@@ -163,7 +163,9 @@
                                             <textarea class="form-control" rows="3" placeholder="请填写快递单号和快递名称，方便客户查询快递信息"></textarea>
                                             <button type="button" onclick="setexpress('@ev.OrderDetailId',this)" class="btn-u btn-u-sm btn-sm" style="margin-top:5px;">确定</button>
                                         </div>
-                                        
+                                    }
+                                    @if (!string.IsNullOrEmpty(ev.Express)) { 
+                                        <div style="padding:3px 0px 8px 0px;"><span style="color:red;">快递信息：</span>@ev.Express</div>
                                     }
                                 </div>
                             }

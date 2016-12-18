@@ -40,7 +40,7 @@ namespace Bilin3d.Modules {
                     select id,statename from t_orderstate"));
                 var orders = db.Select<OrderModel>(string.Format(@"
                     select t1.OrderId,
-                        t1.Express,
+                        t2.Express,
                         t1.CreateTime,
                         t1.Amount,
                         t2.Area,
