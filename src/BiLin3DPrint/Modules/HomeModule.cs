@@ -57,9 +57,9 @@ namespace Bilin3d.Modules {
                 return Response.AsText(str);
             };
 
-            Get["/crm/order"] = _ => {
+            Get["/m/order"] = _ => {
                 base.Page.Title = "比邻3d订单查询";
-                return View["Crm/order", base.Model];
+                return View["m/order", base.Model];
             };
 
             Get["/crm/success"] = _ => {

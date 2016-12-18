@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <title>报表v1</title>
+    <title>订单</title>
     <link href="/resource/vux/dist/vux.css" rel="stylesheet" />
     <style type="text/css">
         body, html {
@@ -26,12 +26,12 @@
 
         <header>
             <x-header :left-options="{showBack: false}">
-                比邻3d订单查询<a slot="right" v-on:click="onShowSearch"><icon type="search"></icon> 搜索</a>
+                3D订单查询<a slot="right" v-on:click="onShowSearch"><icon type="search"></icon> 搜索</a>
             </x-header>
             <tab :line-width=1>
-                <tab-item selected v-on:click="showTab(0)">表格</tab-item>
-                <tab-item v-on:click="showTab(1)">柱状图</tab-item>
-                <tab-item v-on:click="showTab(2)">饼图</tab-item>
+                <tab-item selected v-on:click="showTab(0)">待付款</tab-item>
+                <tab-item v-on:click="showTab(1)">已发货</tab-item>
+                <tab-item v-on:click="showTab(2)">已完成</tab-item>
             </tab>
         </header>
 
@@ -40,9 +40,11 @@
             <div class="box2">
 
 
-                <h3><a href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.being3d.net%2Fcrm%2Fsuccess&response_type=code&scope=snsapi_base&state=123#wechat_redirect'>验证1</a></h3>
+                <a href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fcrm%2Fsuccess&response_type=code&scope=snsapi_base&state=123#wechat_redirect'>验证1</a>
 
-                <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.being3d.net%2Fcrm%2Fsuccess&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect">验证2</a>
+                <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fcrm%2Fsuccess&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect">验证2</a>
+
+                <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fcrm%2Fsuccess&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect">验证2</a>
 
                 <div>
                     <button class="btn btn-default" v-on:click="onShowSetting">
@@ -172,34 +174,6 @@
         Vue.component('icon', vuxIcon);
         Vue.component('scroller', vuxScroller);
 
-        var tableColumns = [
-            {
-                name: 'id',
-                title: 'id编号',
-                visible: true
-            },
-            {
-                name: 'name',
-                title: '姓名',
-                visible: true
-            },
-            {
-                name: 'email',
-                title: '电子邮件',
-                visible: true
-            },
-            {
-                name: 'nickname',
-                title: '昵称',
-                visible: true
-            },
-            {
-                name: 'birthdate',
-                title: '生日',
-                visible: true
-            },
-        ];
-
         var vm = new Vue({
            el: '#app',
            data : function(){
@@ -233,76 +207,21 @@
                   console.log(val)
                 },
                 onShowSetting:function(){
-                    // this.$parent.show2 = true;
                     this.show2 = true;
-                    // alert(this.$parent.show2);
                 },
                 onShowSearch:function(){
-                    // this.$parent.show2 = true;
                     this.show1 = true;
-                    // alert(this.$parent.show2);
                 },
                 showTab : function(val){
                     this.vs= val;
                 },
                 onSubmit:function(){
 
-                },
-
-                /**
-                 * Callback functions
-                 */
-                gender: function(value) {
-                  return value == 'M'
-                    ? '<span class="label label-info"><i class="glyphicon glyphicon-star"></i> Male</span>'
-                    : '<span class="label label-success"><i class="glyphicon glyphicon-heart"></i> Female</span>'
-                },
-                formatDate: function(value, fmt) {
-                    if (value == null) return ''
-                    fmt = (typeof fmt == 'undefined') ? 'D MMM YYYY' : fmt
-                    return moment(value, 'YYYY-MM-DD').format(fmt)
-                }
-
-            },
-            events: {
-                'vuetable:load-success': function(response) {
-                    //this.tableHight = $(".table").height();
-                    //alert(this.tableHight);
-                    //var hei = $(".table-responsive").height();
-                    //this.tableHight = $(".table").height();
-                    //alert(hei);
-
-                    //alert(this.tableHight);
-                    //$(".table-responsive").height(this.tableHight);
-
-                    var data = response.data.data
-                    console.log(data)
-                    if (this.searchFor !== '') {
-                        for (n in data) {
-                            data[n].name = this.highlight(this.searchFor, data[n].name)
-                            data[n].email = this.highlight(this.searchFor, data[n].email)
-                        }
-                    }
-                },
-                'vuetable:load-error': function(response) {
-                    if (response.status == 400) {
-                        sweetAlert('Something\'s Wrong!', response.data.message, 'error')
-                    } else {
-                        sweetAlert('Oops', E_SERVER_ERROR, 'error')
-                    }
                 }
             },
-            created: function(){
-
-            },
-            ready: function () {
-                // this.testid = "eeee";
-                // var query = this.$route.query.id;
-                // // alert(query);
-                $.get('./data.json', function (result) {
-                    //window.alert(data.id);
-                    vm.shops = result.data
-                    //alert(data.data);
+            ready: function () {               
+                $.get('./data.json', function (result) {                  
+                    vm.shops = result.data                   
                 });
             }
 
