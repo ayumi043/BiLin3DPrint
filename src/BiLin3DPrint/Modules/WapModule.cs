@@ -19,12 +19,12 @@ namespace Bilin3d.Modules {
             };
             
             Get["/order"] = _ => {
-                base.Page.Title = "比邻3d订单查询";
-                return View["Wap/order", base.Model];
+                return Response.AsRedirect("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fmyorder&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
+                //return View["Wap/order", base.Model];
             };
 
-            Get["/success"] = _ => {
-                base.Page.Title = "比邻3d订单查询";
+            Get["/myorder"] = _ => {
+                base.Page.Title = "订单查询";
                 string code = Request.Query["code"];
                 string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
                 WebClient wc = new WebClient();
@@ -38,7 +38,8 @@ namespace Bilin3d.Modules {
 
                 Model.Code = code;
                 Model.Openid = openid;
-                return View["Wap/success", base.Model];
+                Model.Userid = userid;
+                return View["Wap/myorder", base.Model];
             };
 
             Get["/succ1"] = _ => {

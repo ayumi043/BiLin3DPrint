@@ -1,20 +1,21 @@
-﻿<!DOCTYPE html>
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+@using Nancy.Validation;
+@using Bilin3d.HtmlExtensions;
+@using System.Collections.Generic;
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <title>订单查询</title>
     <link href="/resource/vux/dist/vux.css" rel="stylesheet" />
-    <style type="text/css">
-        body, html {
-        }
-
+    <style type="text/css">       
         header {
             position: fixed;
             width: 100%;
             z-index: 1;
         }
-
         .vux-scroller-header-box {
             padding-top: 100px;
         }
@@ -36,25 +37,21 @@
         <loading :show="loadingshow" :text=""></loading>
 
         <div class="vux-scroller-header-box" v-show="vs===0">
-            <scroller :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
+            <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
                 <div>
-
-                    <a href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fsuccess&response_type=code&scope=snsapi_base&state=123#wechat_redirect'>验证1</a>
-
-                    <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fsuccess&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect">验证2</a>
-
+                    0                
                 </div>
             </scroller>
         </div>
 
         <div class="vux-scroller-header-box" v-show="vs===1">
-            <scroller :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
+            <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
                 <div>1</div>
             </scroller>
         </div>
 
         <div class="vux-scroller-header-box" v-show="vs===2">
-            <scroller :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
+            <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
                 <div>2</div>
             </scroller>
         </div>
@@ -64,7 +61,7 @@
                 <header>
                     <x-header :left-options="{showBack: false}">
                     帐号绑定
-                    @*<a slot="right" v-on:click="bandingshow=false">关闭</a>*@
+                    <a slot="right" v-on:click="bandingshow=false">关闭</a>
                     </x-header>
                 </header> 
                 <div style="padding-top:54px;">
@@ -137,9 +134,10 @@
                     orders2:[],
                     orders3: [],
                     username: "",
-                    pwd:"",
+                    pwd: "",
+                    userid: "@Model.userid",
                     loadingshow: false,
-                    bandingshow:false
+                    bandingshow: '@Model.userid' === ''
                 }
             },            
             methods: {                
