@@ -5,6 +5,9 @@ using ServiceStack.OrmLite;
 using log4net;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using WxPayAPI;
+using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace Bilin3d.Modules {
     public class WapModule : BaseModule {
@@ -22,6 +25,19 @@ namespace Bilin3d.Modules {
 
             Get["/success"] = _ => {
                 base.Page.Title = "比邻3d订单查询";
+                string code = Request.Query["code"];
+                string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
+                WebClient wc = new WebClient();
+                string json = wc.DownloadString(url);
+                JObject m = JObject.Parse(json);
+                string openid = m["openid"].ToString();
+                var userid = db.Single<string>($@"select id from t_user where WxOpenid='{openid}';");
+                if (string.IsNullOrEmpty(userid) == true) {
+                    userid = "";
+                }
+
+                Model.Code = code;
+                Model.Openid = openid;
                 return View["Wap/success", base.Model];
             };
 
@@ -60,7 +76,7 @@ namespace Bilin3d.Modules {
                 sql = $"SELECT count(1) FROM Gy_Customer where WxOpenid='{wxOpenid}'";
                 string result = Lib.SqlServerHelper.ExecuteScalar(constr, CommandType.Text, sql).ToString();
                 if (result == "0") {
-                    return Response.AsJson(new { message = "账户还没关联，请先关联!" }, HttpStatusCode.BadRequest);
+                    return Response.AsJson(new { message = "账户还没关联，请先关联!" }, Nancy.HttpStatusCode.BadRequest);
                 }
 
                 string rr = "";
