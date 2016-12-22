@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using WxPayAPI;
 using System.Net;
 using Newtonsoft.Json.Linq;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace Bilin3d.Modules {
     public class WapModule : BaseModule {
@@ -24,22 +26,76 @@ namespace Bilin3d.Modules {
             };
 
             Get["/myorder"] = _ => {
-                base.Page.Title = "订单查询";
                 string code = Request.Query["code"];
                 string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
                 WebClient wc = new WebClient();
                 string json = wc.DownloadString(url);
                 JObject m = JObject.Parse(json);
+                if (m["errcode"] != null) {
+                    throw new System.Exception("获取微信openid发生错误:" + json);
+                }
                 string openid = m["openid"].ToString();
                 var userid = db.Single<string>($@"select id from t_user where WxOpenid='{openid}';");
                 if (string.IsNullOrEmpty(userid) == true) {
                     userid = "";
                 }
 
-                Model.Code = code;
                 Model.Openid = openid;
                 Model.Userid = userid;
                 return View["Wap/myorder", base.Model];
+            };
+
+            Post["/bindaccountwx/{openid}"] = parameters => {
+                string openid = parameters.openid;
+                string email = Request.Form["username"];
+                string password = Request.Form["pwd"];
+                int i = db.ExecuteNonQuery($@"update t_user set WxOpenid='{openid}' where Email=@Email and PassWord=@PassWord;", new { Email = email, PassWord = password });
+                if (i > 0) {
+                    string userid = db.Single<string>($@"select id  from t_user where WxOpenid='{openid}'", new { Email = email, PassWord = password });
+                    return Response.AsJson(new { message = "success", userid = userid });
+                }
+                return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
+            };
+
+            Get["/order/{userid}"] = parameters => {
+                string userid = parameters.userid;
+                userid = "3";
+                var orders = db.Select<OrderModel>($@"
+                    select t1.OrderId,
+                        t2.Express,
+                        t1.CreateTime,
+                        t1.Amount,
+                        t2.Area,
+                        t2.Size,
+                        t2.Volume,
+                        t2.Weight,
+                        t2.FileName,
+                        t2.Num,
+                        t5.name as MatName,
+                        t3.StateName,
+                        t3.Id as StateId,
+                        t4.Consignee,
+                        t4.Address,
+                        t6.Fname as SupplierName 
+                    from t_order  t1
+                    left join t_orderdetail  t2 on t2.OrderId=t1.OrderId
+                    left join t_orderstate   t3 on t3.Id=t1.StateId
+                    left join t_address  t4 on t4.Id=t1.AddressId
+                    left join t_material  t5 on t5.MaterialId=t2.MaterialId
+                    left join t_supplier t6 on t6.SupplierId=t2.SupplierId
+                    where t1.UserId=@UserId
+                    order by t1.EditTime desc", new { UserId = userid })
+                    .GroupBy(i => i.StateId)
+                    .ToDictionary(k => k.Key, v => v.ToList());
+                var _orders = orders.Select(i => {
+                    var tmp = i.Value.GroupBy(x => x.OrderId).ToDictionary(y => y.Key, y => y.ToList());
+                    return new {
+                        state = i.Key,
+                        orders = tmp.Select(m => new { orderid = m.Key, detail = m.Value })
+                    };
+                });
+                //string json = JsonConvert.SerializeObject(_orders);  //orders.json
+                return Response.AsJson(_orders);
             };
 
             Get["/succ1"] = _ => {

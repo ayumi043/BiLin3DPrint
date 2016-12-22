@@ -1,5 +1,4 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
-@using Nancy.Validation;
 @using Bilin3d.HtmlExtensions;
 @using System.Collections.Generic;
 
@@ -96,8 +95,8 @@
     <script src="/resource/vux/dist/components/x-header/index.js"></script>
     <script src="/resource/vux/dist/components/icon/index.js"></script>
     <script src="/resource/vux/dist/components/scroller/index.js"></script>
-    <script src="../resource/vux/dist/components/loading/index.js"></script>
-    <script src="../resource/vux/dist/components/tip/index.js"></script>
+    <script src="/resource/vux/dist/components/loading/index.js"></script>
+    <script src="/resource/vux/dist/components/tip/index.js"></script>
 
     <script src="/resource/fastclick/lib/fastclick.js"></script>
     <script src="/resource/jquery/dist/jquery.js"></script>
@@ -126,30 +125,45 @@
         Vue.component('tip', vuxTip);
 
         var vm = new Vue({
-           el: '#app',
-           data : function(){
+            el: '#app',
+            data: function () {
                 return {
                     vs: 0,
-                    orders1:[],
-                    orders2:[],
+                    orders1: [],
+                    orders2: [],
                     orders3: [],
                     username: "",
                     pwd: "",
-                    userid: "@Model.userid",
+                    userid: "@Model.Userid",
+                    openid: "@Model.Openid",
                     loadingshow: false,
-                    bandingshow: '@Model.userid' === ''
-                }
-            },            
-            methods: {                
-                showTab : function(val){
-                    this.vs= val;
-                },
-                onSubmit:function(){
+                    bandingshow: '@Model.Userid' === ''
                 }
             },
-            ready: function () {               
-                //$.get('./data.json', function (result) {                  
-                //    vm.shops = result.data                   
+            methods: {
+                showTab: function (val) {
+                    this.vs = val;
+                },
+                onSubmit: function () {
+                    $.post("./bindaccountwx/" + this.openid, { username: this.username, pwd: this.pwd }, function (data) {
+                        vm.bandingshow = false;
+                        loadingshow = true;
+                        $.get("./order/" + data.userid, function (data) {
+                            $.each(data, function (index, value) {
+                                if (value.state === '1') {
+                                    vm.orders1 = value.orders;
+                                }
+                                if (value.state === '1') {
+                                    vm.orders1 = value.orders;
+                                }
+                            });
+                        });
+                    });
+                }
+            },
+            ready: function () {
+                //$.get('./data.json', function (result) {
+                //    vm.shops = result.data
                 //});
             }
 
