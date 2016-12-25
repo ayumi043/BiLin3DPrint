@@ -9,12 +9,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <title>订单查询</title>
     <link href="/resource/vux/dist/vux.css" rel="stylesheet" />
-    <style type="text/css">       
+    <style type="text/css">
         header {
             position: fixed;
             width: 100%;
             z-index: 1;
         }
+
         .vux-scroller-header-box {
             padding-top: 100px;
         }
@@ -27,9 +28,10 @@
         <header>
             <x-header :left-options="{showBack: false}">订单查询</x-header>
             <tab :line-width=1>
-                <tab-item selected v-on:click="showTab(0)">待付款</tab-item>
-                <tab-item v-on:click="showTab(1)">已发货</tab-item>
-                <tab-item v-on:click="showTab(2)">已完成</tab-item>
+                <tab-item v-on:click="showTab(0)">待付款</tab-item>
+                <tab-item v-on:click="showTab(1)">待发货</tab-item>
+                <tab-item v-on:click="showTab(2)">待收货</tab-item>
+                <tab-item v-on:click="showTab(3)">已完成</tab-item>
             </tab>
         </header>
 
@@ -38,14 +40,36 @@
         <div class="vux-scroller-header-box" v-show="vs===0">
             <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
                 <div>
-                    0                
+                    <div v-for="order in orders1">
+                        <div>订单号:{{order.orderid}}</div>
+                        <div v-for="item in order.detail">
+                            <div>{{item.MatName}}</div>
+                            <div>{{item.Amount}}</div>
+                            <div>{{item.Num}}</div>
+                            <div>{{item.Size}}</div>
+                        </div>
+                    </div>
                 </div>
             </scroller>
         </div>
 
         <div class="vux-scroller-header-box" v-show="vs===1">
             <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
-                <div>1</div>
+                <div>
+                    <group v-for="order in orders3">
+                        <cell title="order.orderid"></cell>
+                    </group>
+                </div>
+            </scroller>
+        </div>
+
+        <div class="vux-scroller-header-box" v-show="vs===2">
+            <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
+                <div>
+                    <group v-for="order in orders3">
+                        <cell title="order.orderid"></cell>
+                    </group>
+                </div>
             </scroller>
         </div>
 
@@ -59,17 +83,17 @@
             <div>
                 <header>
                     <x-header :left-options="{showBack: false}">
-                    帐号绑定
-                    <a slot="right" v-on:click="bandingshow=false">关闭</a>
+                        帐号绑定
+                        <a slot="right" v-on:click="bandingshow=false">关闭</a>
                     </x-header>
-                </header> 
+                </header>
                 <div style="padding-top:54px;">
                     <div style="margin:3px 0px 8px 18px;color:red;font-size:12px;">
                         你的微信还未绑定，请填写帐号密码，绑定后才能查看订单信息！
-                    </div>                    
-                    <x-input title="用户：" placeholder="电子邮箱"  type="email" required="required" :value.sync="username"></x-input>
+                    </div>
+                    <x-input title="用户：" placeholder="电子邮箱" type="email" required="required" :value.sync="username"></x-input>
                     <x-input title="密码：" placeholder="密码" type="password" required="required" :value.sync="pwd"></x-input>
-                  
+
                     <div style="margin:6px 15px 6px 15px;">
                         <x-button type="primary" v-on:click="onSubmit">绑定</x-button>
                     </div>
@@ -100,7 +124,7 @@
 
     <script src="/resource/fastclick/lib/fastclick.js"></script>
     <script src="/resource/jquery/dist/jquery.js"></script>
-       
+
     <script>
         FastClick.attach(document.body);
 
@@ -132,6 +156,7 @@
                     orders1: [],
                     orders2: [],
                     orders3: [],
+                    orders3: [],
                     username: "",
                     pwd: "",
                     userid: "@Model.Userid",
@@ -153,8 +178,11 @@
                                 if (value.state === '1') {
                                     vm.orders1 = value.orders;
                                 }
-                                if (value.state === '1') {
-                                    vm.orders1 = value.orders;
+                                if (value.state === '5') {
+                                    vm.orders2 = value.orders;
+                                }
+                                if (value.state === '6') {
+                                    vm.orders3 = value.orders;
                                 }
                             });
                         });
@@ -162,9 +190,21 @@
                 }
             },
             ready: function () {
-                //$.get('./data.json', function (result) {
-                //    vm.shops = result.data
-                //});
+                if (this.userid != '') {
+                    $.get("./order/" + this.userid, function (data) {
+                        $.each(data, function (index, value) {
+                            if (value.state === '1') {
+                                vm.orders1 = value.orders;
+                            }
+                            if (value.state === '5') {
+                                vm.orders2 = value.orders;
+                            }
+                            if (value.state === '6') {
+                                vm.orders3 = value.orders;
+                            }
+                        });
+                    });
+                }
             }
 
         });
