@@ -21,7 +21,7 @@ namespace Bilin3d.Modules {
             };
             
             Get["/order"] = _ => {
-                return Response.AsRedirect("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx34e6d95f227d51be&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fmyorder&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
+                return Response.AsRedirect($"https://open.weixin.qq.com/connect/oauth2/authorize?appid={WxPayConfig.APPID}&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fmyorder&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
                 //return View["Wap/order", base.Model];
             };
 
@@ -42,25 +42,29 @@ namespace Bilin3d.Modules {
 
                 Model.Openid = openid;
                 Model.Userid = userid;
+                Session["userid"] = userid;
                 return View["Wap/myorder", base.Model];
             };
 
             Post["/bindaccountwx/{openid}"] = parameters => {
-                string openid = parameters.openid;
-                string email = Request.Form["username"];
-                string password = Request.Form["pwd"];
-                int i = db.ExecuteNonQuery($@"update t_user set WxOpenid='{openid}' where Email=@Email and PassWord=@PassWord;", new { Email = email, PassWord = password });
-                if (i > 0) {
-                    string userid = db.Single<string>($@"select id  from t_user where WxOpenid='{openid}'", new { Email = email, PassWord = password });
-                    return Response.AsJson(new { message = "success", userid = userid });
+                if (Session["userid"] != null) {
+                    string openid = parameters.openid;
+                    string email = Request.Form["username"];
+                    string password = Request.Form["pwd"];
+                    int i = db.ExecuteNonQuery($@"update t_user set WxOpenid='{openid}' where Email=@Email and PassWord=@PassWord;", new { Email = email, PassWord = password });
+                    if (i > 0) {
+                        string userid = db.Single<string>($@"select id  from t_user where WxOpenid='{openid}'", new { Email = email, PassWord = password });
+                        return Response.AsJson(new { message = "success", userid = userid });
+                    }                    
                 }
                 return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
             };
 
             Get["/order/{userid}"] = parameters => {
-                string userid = parameters.userid;
-                userid = "3";
-                var orders = db.Select<OrderModel>($@"
+                if (Session["userid"] != null) {
+                    string userid = parameters.userid;
+                    userid = "3";
+                    var orders = db.Select<OrderModel>($@"
                     select t1.OrderId,
                         t2.Express,
                         t1.CreateTime,
@@ -85,17 +89,19 @@ namespace Bilin3d.Modules {
                     left join t_supplier t6 on t6.SupplierId=t2.SupplierId
                     where t1.UserId=@UserId
                     order by t1.EditTime desc", new { UserId = userid })
-                    .GroupBy(i => i.StateId)
-                    .ToDictionary(k => k.Key, v => v.ToList());
-                var _orders = orders.Select(i => {
-                    var tmp = i.Value.GroupBy(x => x.OrderId).ToDictionary(y => y.Key, y => y.ToList());
-                    return new {
-                        state = i.Key,
-                        orders = tmp.Select(m => new { orderid = m.Key, detail = m.Value })
-                    };
-                });
-                //string json = JsonConvert.SerializeObject(_orders);  //orders.json
-                return Response.AsJson(_orders);
+                        .GroupBy(i => i.StateId)
+                        .ToDictionary(k => k.Key, v => v.ToList());
+                    var _orders = orders.Select(i => {
+                        var tmp = i.Value.GroupBy(x => x.OrderId).ToDictionary(y => y.Key, y => y.ToList());
+                        return new {
+                            state = i.Key,
+                            orders = tmp.Select(m => new { orderid = m.Key, detail = m.Value })
+                        };
+                    });
+                    //string json = JsonConvert.SerializeObject(_orders);  //orders.json
+                    return Response.AsJson(_orders);
+                }
+                return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
             };
 
             Get["/succ1"] = _ => {
@@ -133,7 +139,7 @@ namespace Bilin3d.Modules {
                 sql = $"SELECT count(1) FROM Gy_Customer where WxOpenid='{wxOpenid}'";
                 string result = Lib.SqlServerHelper.ExecuteScalar(constr, CommandType.Text, sql).ToString();
                 if (result == "0") {
-                    return Response.AsJson(new { message = "账户还没关联，请先关联!" }, Nancy.HttpStatusCode.BadRequest);
+                    return Response.AsJson(new { message = "您的账户还没关联，请先关联!" }, Nancy.HttpStatusCode.BadRequest);
                 }
 
                 string rr = "";
