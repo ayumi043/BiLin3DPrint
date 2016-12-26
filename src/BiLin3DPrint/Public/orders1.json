@@ -1,0 +1,203 @@
+﻿[
+  {
+    "state": "1",
+    "orders": [
+      {
+        "orderid": "3201612081000345860",
+        "detail": [
+          {
+            "orderId": "3201612081000345860",
+            "orderDetailId": null,
+            "stateId": "1",
+            "createTime": "2016-12-08T21:59:03.0000000Z",
+            "amount": 46.44000,
+            "num": "2",
+            "area": "663.9  mm²",
+            "size": "9.85 * 34.72 * 1.35  mm",
+            "volume": "365.74",
+            "weight": "365.74",
+            "fileName": "3$2016-12-08-09-59-27-23234$马.stl",
+            "matName": "光敏树脂（透明料)",
+            "stateName": "已下单-待付款",
+            "consignee": "ccccc",
+            "express": null,
+            "address": "ccccc",
+            "supplierName": "福建省泉州市XXX公司",
+            "payFrom": 0,
+            "payName": null,
+            "payOrderId": null,
+            "payTime": "0001-01-01T00:00:00.0000000+08:00"
+          }
+        ]
+      },
+      {
+        "orderid": "3201611270902543895",
+        "detail": [
+          {
+            "orderId": "3201611270902543895",
+            "orderDetailId": null,
+            "stateId": "1",
+            "createTime": "2016-11-27T09:01:33.0000000Z",
+            "amount": 25.00000,
+            "num": "1",
+            "area": "663.9  mm²",
+            "size": "9.85 * 34.72 * 1.35  mm",
+            "volume": "365.74",
+            "weight": "365.74",
+            "fileName": "3$2016-11-27-09-02-10-60764$鹰.stl",
+            "matName": "光敏树脂（透明料)",
+            "stateName": "已下单-待付款",
+            "consignee": "bbbbbb",
+            "express": null,
+            "address": "bbbbbbbb",
+            "supplierName": "福建省泉州市XXX公司",
+            "payFrom": 0,
+            "payName": null,
+            "payOrderId": null,
+            "payTime": "0001-01-01T00:00:00.0000000+08:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "state": "5",
+    "orders": [
+      {
+        "orderid": "3201611281059368999",
+        "detail": [
+          {
+            "orderId": "3201611281059368999",
+            "orderDetailId": null,
+            "stateId": "5",
+            "createTime": "2016-11-28T22:58:14.0000000Z",
+            "amount": 0.02000,
+            "num": "1",
+            "area": "663.9  mm²",
+            "size": "9.85 * 34.72 * 1.35  mm",
+            "volume": "365.74",
+            "weight": "365.74",
+            "fileName": "3$2016-11-28-10-58-09-52708$鹰.stl",
+            "matName": "光敏树脂（透明料)",
+            "stateName": "审核成功-已安排生产",
+            "consignee": "bbbbbb",
+            "express": null,
+            "address": "bbbbbbbb",
+            "supplierName": "福建省泉州市XXX公司",
+            "payFrom": 0,
+            "payName": null,
+            "payOrderId": null,
+            "payTime": "0001-01-01T00:00:00.0000000+08:00"
+          },
+          {
+            "orderId": "3201611281059368999",
+            "orderDetailId": null,
+            "stateId": "5",
+            "createTime": "2016-11-28T22:58:14.0000000Z",
+            "amount": 0.02000,
+            "num": "1",
+            "area": "663.9  mm²",
+            "size": "9.85 * 34.72 * 1.35  mm",
+            "volume": "365.74",
+            "weight": "1828.7",
+            "fileName": "3$2016-11-28-10-58-51-07455$鹰111.stl",
+            "matName": "钛合金",
+            "stateName": "审核成功-已安排生产",
+            "consignee": "bbbbbb",
+            "express": null,
+            "address": "bbbbbbbb",
+            "supplierName": "山东省XX公司",
+            "payFrom": 0,
+            "payName": null,
+            "payOrderId": null,
+            "payTime": "0001-01-01T00:00:00.0000000+08:00"
+          },
+          {
+            "orderId": "3201611281059368999",
+            "orderDetailId": null,
+            "stateId": "5",
+            "createTime": "2016-11-28T22:58:14.0000000Z",
+            "amount": 0.02000,
+            "num": "3",
+            "area": "663.9  mm²",
+            "size": "9.85 * 34.72 * 1.35  mm",
+            "volume": "365.74",
+            "weight": "365.74",
+            "fileName": "3$2016-11-28-10-58-09-52708$鹰.stl",
+            "matName": "光敏树脂（透明料)",
+            "stateName": "审核成功-已安排生产",
+            "consignee": "bbbbbb",
+            "express": "#顺丰快递#\n#快递单号#12345",
+            "address": "bbbbbbbb",
+            "supplierName": "福建省泉州市XXX公司",
+            "payFrom": 0,
+            "payName": null,
+            "payOrderId": null,
+            "payTime": "0001-01-01T00:00:00.0000000+08:00"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "state": "2",
+    "orders": [
+      {
+        "orderid": "3201611270848358370",
+        "detail": [
+          {
+            "orderId": "3201611270848358370",
+            "orderDetailId": null,
+            "stateId": "2",
+            "createTime": "2016-11-27T20:47:13.0000000Z",
+            "amount": 0.01000,
+            "num": "4",
+            "area": "663.9  mm²",
+            "size": "9.85 * 34.72 * 1.35  mm",
+            "volume": "365.74",
+            "weight": "365.74",
+            "fileName": "3$2016-11-27-08-47-57-71338$鹰.stl",
+            "matName": "光敏树脂（透明料)",
+            "stateName": "已付款-待审核",
+            "consignee": "aaaaaaabbbbbbbbbbbbbbb",
+            "express": null,
+            "address": "1111122222",
+            "supplierName": "福建省泉州市XXX公司",
+            "payFrom": 0,
+            "payName": null,
+            "payOrderId": null,
+            "payTime": "0001-01-01T00:00:00.0000000+08:00"
+          }
+        ]
+      },
+      {
+        "orderid": "3201611171115206059",
+        "detail": [
+          {
+            "orderId": "3201611171115206059",
+            "orderDetailId": null,
+            "stateId": "2",
+            "createTime": "2016-11-17T23:14:09.0000000Z",
+            "amount": 0.01000,
+            "num": "3",
+            "area": "663.9  mm²",
+            "size": "9.85 * 34.72 * 1.35  mm",
+            "volume": "365.74",
+            "weight": "365.74",
+            "fileName": "3$2016-11-17-10-59-12-77667$鹰.stl",
+            "matName": "光敏树脂（透明料)",
+            "stateName": "已付款-待审核",
+            "consignee": "bbbbbb",
+            "express": null,
+            "address": "bbbbbbbb",
+            "supplierName": "福建省泉州市XXX公司",
+            "payFrom": 0,
+            "payName": null,
+            "payOrderId": null,
+            "payTime": "0001-01-01T00:00:00.0000000+08:00"
+          }
+        ]
+      }
+    ]
+  }
+]

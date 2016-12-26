@@ -39,15 +39,18 @@
 
         <div class="vux-scroller-header-box" v-show="vs===0">
             <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
-                <div>
+                <div style="padding:10px;">
                     <div v-for="order in orders1">
                         <div>订单号:{{order.orderid}}</div>
+                        
                         <div v-for="item in order.detail">
-                            <div>{{item.MatName}}</div>
-                            <div>{{item.Amount}}</div>
-                            <div>{{item.Num}}</div>
-                            <div>{{item.Size}}</div>
+                            <div>供应商:{{item.matName}}</div>
+                            <div>材料:{{item.matName}}</div>
+                            <div>{{item.amount}}</div>
+                            <div>{{item.num}}</div>
+                            <div>{{item.size}}</div>
                         </div>
+                        <div style="height:1px;background:rgba(0,0,0,.07);margin:15px 0px 15px 0px;"></div>
                     </div>
                 </div>
             </scroller>
@@ -162,7 +165,8 @@
                     userid: "@Model.Userid",
                     openid: "@Model.Openid",
                     loadingshow: false,
-                    bandingshow: '@Model.Userid' === ''
+                    //bandingshow: '@Model.Userid' === ''
+                    bandingshow: false
                 }
             },
             methods: {
@@ -190,6 +194,21 @@
                 }
             },
             ready: function () {
+
+                $.get("/orders1.json", function (data) {
+                    $.each(data, function (index, value) {
+                        if (value.state === '1') {
+                            vm.orders1 = value.orders;
+                        }
+                        if (value.state === '5') {
+                            vm.orders2 = value.orders;
+                        }
+                        if (value.state === '6') {
+                            vm.orders3 = value.orders;
+                        }
+                    });
+                 });
+
                 if (this.userid != '') {
                     $.get("./order/" + this.userid, function (data) {
                         $.each(data, function (index, value) {
