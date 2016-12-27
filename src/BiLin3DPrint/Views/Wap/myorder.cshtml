@@ -10,6 +10,7 @@
     <title>订单查询</title>
     <link href="/resource/vux/dist/vux.css" rel="stylesheet" />
     <style type="text/css">
+        body{background-color:#fbf9fe;}
         header {
             position: fixed;
             width: 100%;
@@ -19,6 +20,35 @@
         .vux-scroller-header-box {
             padding-top: 100px;
         }
+
+        .order-panel {
+            font-size: 14px;
+            padding: 14px 15px 12px 15px;
+            margin: 6px 0px 15px 0px;
+            background: #fff;
+            border-top: 1px solid #e5e5e5;
+            border-bottom: 1px solid #e5e5e5;
+            line-height: 1.7;
+        }
+
+        .order-detail {
+            padding: 8px 0px 8px 0px;
+           
+        }
+        .order-head{
+            font-size:13px;color:#999;border-bottom:1px solid #e5e5e5;padding:2px 0px 8px 0px;
+        }
+        .order-amount{
+            font-size:12px;font-weight:bold;color:red;float:right;
+        }
+        .order-amount1{
+            font-size:12px;font-weight:bold;color:#000;float:right;
+        }
+        .order-num{
+            font-size:11px;color:#999;float:right;
+        }
+        .order-splite{ border-bottom:1px dotted #e5e5e5;}
+        .order-splite-no{border:0px;}
     </style>
     <script src="/resource/vue/vue.js"></script>
 </head>
@@ -28,58 +58,92 @@
         <header>
             <x-header :left-options="{showBack: false}">订单查询</x-header>
             <tab :line-width=1>
-                <tab-item v-on:click="showTab(0)">待付款</tab-item>
-                <tab-item v-on:click="showTab(1)">待发货</tab-item>
-                <tab-item v-on:click="showTab(2)">待收货</tab-item>
-                <tab-item v-on:click="showTab(3)">已完成</tab-item>
+                <tab-item selected v-on:click="showTab(0)">待付款</tab-item>
+                <tab-item v-on:click="showTab(1)">已付款</tab-item>
+                <tab-item v-on:click="showTab(2)">待发货</tab-item>
+                <tab-item v-on:click="showTab(3)">待收货</tab-item>
+                <tab-item v-on:click="showTab(4)">已完成</tab-item>
             </tab>
         </header>
 
         <loading :show="loadingshow" :text=""></loading>
 
         <div class="vux-scroller-header-box" v-show="vs===0">
-            <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
-                <div style="padding:10px;">
-                    <div v-for="order in orders1">
-                        <div>订单号:{{order.orderid}}</div>
-                        
-                        <div v-for="item in order.detail">
-                            <div>供应商:{{item.matName}}</div>
-                            <div>材料:{{item.matName}}</div>
-                            <div>{{item.amount}}</div>
-                            <div>{{item.num}}</div>
-                            <div>{{item.size}}</div>
-                        </div>
-                        <div style="height:1px;background:rgba(0,0,0,.07);margin:15px 0px 15px 0px;"></div>
-                    </div>
+            <div>
+                <div class="order-panel" v-for="order in orders1">
+                    <div class="order-head">订单号:{{order.orderid}}  <div class="order-amount">应付款：￥{{order.detail[0].amount}}</div></div>
+                    <div v-bind:class="{'order-detail' : true, 'order-splite' : order.detail.length > 1, 'order-splite-no' : order.detail.length === index + 1}" v-for="(index,item) in order.detail">
+                        <div>供应商:{{item.supplierName}}<div class="order-amount1">￥{{item.amountDetail}}</div> </div>
+                        <div>材料:{{item.matName}} <div class="order-num">x{{item.num}}</div> </div>
+                        <div>文件：{{item.fileName.split('$')[2]}}</div>
+                        <div>尺寸：{{item.size}}</div>                           
+                    </div>   
+                    <div class="modal-body">
+                        <p><img src="/images/wxpay/WePayLogo.png" style="width:95px;" /></p>
+                        <p>
+                            <img v-bind:src="'./qrcode/' + order.orderid" alt="" style="height: 140px;" />
+                        </p>
+                        <p>长按二维码，点击"识别图中二维码"付款</p>
+                        <p>支付完后，订单状态更新可能会有几秒的延迟!</p>
+                    </div>                    
                 </div>
-            </scroller>
+            </div>           
         </div>
 
         <div class="vux-scroller-header-box" v-show="vs===1">
-            <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
-                <div>
-                    <group v-for="order in orders3">
-                        <cell title="order.orderid"></cell>
-                    </group>
+            <div>
+                <div class="order-panel" v-for="order in orders2">
+                    <div class="order-head">订单号:{{order.orderid}}  <div class="order-amount1">总付：￥{{order.detail[0].amount}}</div></div>
+                    <div v-bind:class="{'order-detail' : true, 'order-splite' : order.detail.length > 1, 'order-splite-no' : order.detail.length === index + 1}" v-for="(index,item) in order.detail">
+                        <div>供应商:{{item.supplierName}}<div class="order-amount1">￥{{item.amountDetail}}</div> </div>
+                        <div>材料:{{item.matName}} <div class="order-num">x{{item.num}}</div> </div>
+                        <div>文件：{{item.fileName.split('$')[2]}}</div>
+                        <div>尺寸：{{item.size}}</div>
+                    </div>
                 </div>
-            </scroller>
+            </div>
         </div>
 
         <div class="vux-scroller-header-box" v-show="vs===2">
-            <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
-                <div>
-                    <group v-for="order in orders3">
-                        <cell title="order.orderid"></cell>
-                    </group>
+            <div>
+                <div class="order-panel" v-for="order in orders3">
+                    <div class="order-head">订单号:{{order.orderid}}  <div class="order-amount1">总付：￥{{order.detail[0].amount}}</div></div>
+                    <div v-bind:class="{'order-detail' : true, 'order-splite' : order.detail.length > 1, 'order-splite-no' : order.detail.length === index + 1}" v-for="(index,item) in order.detail">
+                        <div>供应商:{{item.supplierName}}<div class="order-amount1">￥{{item.amountDetail}}</div> </div>
+                        <div>材料:{{item.matName}} <div class="order-num">x{{item.num}}</div> </div>
+                        <div>文件：{{item.fileName.split('$')[2]}}</div>
+                        <div>尺寸：{{item.size}}</div>
+                    </div>
                 </div>
-            </scroller>
+            </div>
         </div>
 
-        <div class="vux-scroller-header-box" v-show="vs===2">
-            <scroller lock-x :scrollbar-x=false :scrollbar-y=false height="-100px" :bounce="false">
-                <div>2</div>
-            </scroller>
+        <div class="vux-scroller-header-box" v-show="vs===3">
+            <div>
+                <div class="order-panel" v-for="order in orders4">
+                    <div class="order-head">订单号:{{order.orderid}}  <div class="order-amount1">总付：￥{{order.detail[0].amount}}</div></div>
+                    <div v-bind:class="{'order-detail' : true, 'order-splite' : order.detail.length > 1, 'order-splite-no' : order.detail.length === index + 1}" v-for="(index,item) in order.detail">
+                        <div>供应商:{{item.supplierName}}<div class="order-amount1">￥{{item.amountDetail}}</div> </div>
+                        <div>材料:{{item.matName}} <div class="order-num">x{{item.num}}</div> </div>
+                        <div>文件：{{item.fileName.split('$')[2]}}</div>
+                        <div>尺寸：{{item.size}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="vux-scroller-header-box" v-show="vs===4">
+            <div>
+                <div class="order-panel" v-for="order in orders5">
+                    <div class="order-head">订单号:{{order.orderid}}  <div class="order-amount1">总付：￥{{order.detail[0].amount}}</div></div>
+                    <div v-bind:class="{'order-detail' : true, 'order-splite' : order.detail.length > 1, 'order-splite-no' : order.detail.length === index + 1}" v-for="(index,item) in order.detail">
+                        <div>供应商:{{item.supplierName}}<div class="order-amount1">￥{{item.amountDetail}}</div> </div>
+                        <div>材料:{{item.matName}} <div class="order-num">x{{item.num}}</div> </div>
+                        <div>文件：{{item.fileName.split('$')[2]}}</div>
+                        <div>尺寸：{{item.size}}</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <popup :show.sync="bandingshow" height="100%">
@@ -148,8 +212,7 @@
         Vue.component('x-header', vuxXHeader);
         Vue.component('icon', vuxIcon);
         Vue.component('scroller', vuxScroller);
-        Vue.component('loading', vuxLoading);
-        Vue.component('tip', vuxTip);
+        Vue.component('loading', vuxLoading);       
 
         var vm = new Vue({
             el: '#app',
@@ -159,14 +222,14 @@
                     orders1: [],
                     orders2: [],
                     orders3: [],
-                    orders3: [],
+                    orders4: [],
+                    orders5: [],
                     username: "",
                     pwd: "",
                     userid: "@Model.Userid",
                     openid: "@Model.Openid",
                     loadingshow: false,
-                    //bandingshow: '@Model.Userid' === ''
-                    bandingshow: false
+                    bandingshow: '@Model.Userid' === ''                   
                 }
             },
             methods: {
@@ -182,11 +245,17 @@
                                 if (value.state === '1') {
                                     vm.orders1 = value.orders;
                                 }
-                                if (value.state === '5') {
+                                if (value.state === '2') {
                                     vm.orders2 = value.orders;
                                 }
-                                if (value.state === '6') {
+                                if (value.state === '5') {
                                     vm.orders3 = value.orders;
+                                }
+                                if (value.state === '6') {
+                                    vm.orders4 = value.orders;
+                                }
+                                if (value.state === '7' || value.state === '8') {
+                                    vm.orders5 = value.orders;
                                 }
                             });
                         });
@@ -195,19 +264,22 @@
             },
             ready: function () {
 
-                $.get("/orders1.json", function (data) {
-                    $.each(data, function (index, value) {
-                        if (value.state === '1') {
-                            vm.orders1 = value.orders;
-                        }
-                        if (value.state === '5') {
-                            vm.orders2 = value.orders;
-                        }
-                        if (value.state === '6') {
-                            vm.orders3 = value.orders;
-                        }
-                    });
-                 });
+                //$.get("/orders1.json", function (data) {
+                //    $.each(data, function (index, value) {
+                //        if (value.state === '1') {
+                //            vm.orders1 = value.orders;
+                //        }
+                //        if (value.state === '5') {
+                //            vm.orders2 = value.orders;
+                //        }
+                //        if (value.state === '6') {
+                //            vm.orders3 = value.orders;
+                //        }
+                //        if (value.state === '7' || value.state === '8') {
+                //            vm.orders3 = value.orders;
+                //        }
+                //    });
+                // });
 
                 if (this.userid != '') {
                     $.get("./order/" + this.userid, function (data) {
@@ -215,11 +287,17 @@
                             if (value.state === '1') {
                                 vm.orders1 = value.orders;
                             }
-                            if (value.state === '5') {
+                            if (value.state === '2') {
                                 vm.orders2 = value.orders;
                             }
-                            if (value.state === '6') {
+                            if (value.state === '5') {
                                 vm.orders3 = value.orders;
+                            }
+                            if (value.state === '6') {
+                                vm.orders4 = value.orders;
+                            }
+                            if (value.state === '7' || value.state === '8') {
+                                vm.orders5 = value.orders;
                             }
                         });
                     });
@@ -227,6 +305,6 @@
             }
 
         });
-    </script>
+    </script>    
 </body>
 </html>

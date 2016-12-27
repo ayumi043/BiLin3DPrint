@@ -10,6 +10,8 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json;
+using System.IO;
+using ThoughtWorks.QRCode.Codec;
 
 namespace Bilin3d.Modules {
     public class WapModule : BaseModule {
@@ -22,32 +24,31 @@ namespace Bilin3d.Modules {
             
             Get["/order"] = _ => {
                 return Response.AsRedirect($"https://open.weixin.qq.com/connect/oauth2/authorize?appid={WxPayConfig.APPID}&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fmyorder&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
-                //return View["Wap/order", base.Model];
             };
 
             Get["/myorder"] = _ => {
-                //string code = Request.Query["code"];
-                //string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
-                //WebClient wc = new WebClient();
-                //string json = wc.DownloadString(url);
-                //JObject m = JObject.Parse(json);
-                //if (m["errcode"] != null) {
-                //    throw new System.Exception("获取微信openid发生错误:" + json);
-                //}
-                //string openid = m["openid"].ToString();
-                //var userid = db.Single<string>($@"select id from t_user where WxOpenid='{openid}';");
-                //if (string.IsNullOrEmpty(userid) == true) {
-                //    userid = "";
-                //}
+                string code = Request.Query["code"];
+                string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
+                WebClient wc = new WebClient();
+                string json = wc.DownloadString(url);
+                JObject m = JObject.Parse(json);
+                if (m["errcode"] != null) {
+                    throw new System.Exception("获取微信openid发生错误:" + json);
+                }
+                string openid = m["openid"].ToString();
+                var userid = db.Single<string>($@"select id from t_user where WxOpenid='{openid}';");
+                if (string.IsNullOrEmpty(userid) == true) {
+                    userid = "";
+                }
 
-                //Model.Openid = openid;
-                //Model.Userid = userid;
-                //Session["userid"] = userid;
+                Model.Openid = openid;
+                Model.Userid = userid;
+                Session["userid"] = userid;
 
-                Model.Openid = "";
-                Model.Userid = "";
-                Session["userid"] = "";
-                return View["Wap/myorder", base.Model];
+                //Model.Openid = "";
+                //Model.Userid = "";
+                //Session["userid"] = "";
+                return View["Wap/Myorder", base.Model];
             };
 
             Post["/bindaccountwx/{openid}"] = parameters => {
@@ -67,12 +68,12 @@ namespace Bilin3d.Modules {
             Get["/order/{userid}"] = parameters => {
                 if (Session["userid"] != null) {
                     string userid = parameters.userid;
-                    userid = "3";
                     var orders = db.Select<OrderModel>($@"
                     select t1.OrderId,
                         t2.Express,
                         t1.CreateTime,
                         t1.Amount,
+                        t2.Amount as AmountDetail,                       
                         t2.Area,
                         t2.Size,
                         t2.Volume,
@@ -106,6 +107,28 @@ namespace Bilin3d.Modules {
                     return Response.AsJson(_orders);
                 }
                 return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
+            };
+
+            Get["/qrcode/{orderId}"] = parameters => {
+                if (Session["userid"] != null) {
+                    string orderId = parameters.orderId;
+                    var order = db.Single<OrderModel>("select OrderId,Amount from t_order where OrderId=@OrderId and StateId=1", new { OrderId = orderId });
+                    var response = new Response();
+                    response.ContentType = "image/png";
+                    response.Contents = stream => {
+                        using (var writer = new BinaryWriter(stream)) {
+                            writer.Write(
+                                OrderModule.qrcode(
+                                    order.OrderId,
+                                    "3D打印订单付款",
+                                    (order.Amount * 100).ToString("f0")
+                                )
+                            );
+                        }
+                    };
+                    return response;
+                }
+                return null;                
             };
 
             Get["/succ1"] = _ => {
@@ -155,7 +178,6 @@ namespace Bilin3d.Modules {
 
                 return View["Wap/order", base.Model];
             };
-
 
         }
     }

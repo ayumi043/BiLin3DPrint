@@ -231,7 +231,7 @@ namespace Bilin3d.Modules {
             }
         }
 
-        private byte[] qrcode(string orderId,string body,string total_fee) {
+        public static byte[] qrcode(string orderId,string body,string total_fee) {
             NativePay nativePay = new NativePay();
 
             //生成扫码支付模式二url

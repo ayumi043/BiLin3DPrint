@@ -12,6 +12,7 @@ namespace Bilin3d.Models
         public string StateId { get; set; }
         public DateTime CreateTime { get; set; }
         public decimal Amount { get; set; }
+        public decimal AmountDetail { get; set; }
         public string Num { get; set; }
 
         public string Area { get; set; }
