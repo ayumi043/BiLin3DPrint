@@ -212,7 +212,7 @@
         Vue.component('x-header', vuxXHeader);
         Vue.component('icon', vuxIcon);
         Vue.component('scroller', vuxScroller);
-        Vue.component('loading', vuxLoading);       
+        Vue.component('loading', vuxLoading);
 
         var vm = new Vue({
             el: '#app',
@@ -229,12 +229,33 @@
                     userid: "@Model.Userid",
                     openid: "@Model.Openid",
                     loadingshow: false,
-                    bandingshow: '@Model.Userid' === ''                   
+                    bandingshow: '@Model.Userid' === ''
                 }
             },
             methods: {
                 showTab: function (val) {
                     this.vs = val;
+                },
+                getData: function () {
+                    $.get("./order/" + this.userid, function (data) {
+                        $.each(data, function (index, value) {
+                            if (value.state === '1') {
+                                vm.orders1 = value.orders;
+                            }
+                            if (value.state === '2') {
+                                vm.orders2 = value.orders;
+                            }
+                            if (value.state === '5') {
+                                vm.orders3 = value.orders;
+                            }
+                            if (value.state === '6') {
+                                vm.orders4 = value.orders;
+                            }
+                            if (value.state === '7' || value.state === '8') {
+                                vm.orders5 = value.orders;
+                            }
+                        });
+                    });
                 },
                 onSubmit: function () {
                     $.post("./bindaccountwx/" + this.openid, { username: this.username, pwd: this.pwd }, function (data) {
@@ -282,26 +303,18 @@
                 // });
 
                 if (this.userid != '') {
-                    $.get("./order/" + this.userid, function (data) {
-                        $.each(data, function (index, value) {
-                            if (value.state === '1') {
-                                vm.orders1 = value.orders;
-                            }
-                            if (value.state === '2') {
-                                vm.orders2 = value.orders;
-                            }
-                            if (value.state === '5') {
-                                vm.orders3 = value.orders;
-                            }
-                            if (value.state === '6') {
-                                vm.orders4 = value.orders;
-                            }
-                            if (value.state === '7' || value.state === '8') {
-                                vm.orders5 = value.orders;
-                            }
-                        });
-                    });
+                    this.getData();
                 }
+            },
+            created: function () {
+                var i = 0;
+                var int = setInterval(function () {
+                    i++;
+                    if (i === 120) {
+                        window.clearInterval(int);
+                    }
+                    vm.getData();
+                }, 3000);
             }
 
         });
