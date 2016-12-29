@@ -341,7 +341,7 @@
                                 | limitBy pageSize pageSize*curPageMat">
                 <td valign="top">
                     <img style="width:30px;height:30px;" 
-                     v-bind:src="item.logo==null ? 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png' : 'http://n.sinaimg.cn/sports/index1508/logo.png'"></td>
+                     v-bind:src="item.logo==null ? 'item.logo' : 'item.logo'"></td>
                 <td style="text-align:left;">
                     <span style="font-weight:bold;">{{item.fname}}</span>
                 </td>
