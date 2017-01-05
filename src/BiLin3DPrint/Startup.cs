@@ -47,10 +47,6 @@ namespace BiLin3D {
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.Run(async (context) => {
-            //    await context.Response.WriteAsync("Hello World!");
-            //});
-            
             app.UseOwin().UseNancy();
             //app.UseOwin(x => {
             //    x.UseNancy(opts => opts.Bootstrapper = new Bootstrapper());

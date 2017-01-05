@@ -14,6 +14,7 @@ using WxPayAPI;
 using ThoughtWorks.QRCode.Codec;
 using System.Drawing;
 using System.Drawing.Imaging;
+using BiLin3D.Lib;
 
 namespace Bilin3d.Modules {
     public class OrderModule : BaseModule {
@@ -38,7 +39,15 @@ namespace Bilin3d.Modules {
 
                 var orderStates = db.Select<OrderStateModel>(string.Format(@"
                     select id,statename from t_orderstate"));
-                var orders = db.Select<OrderModel>(string.Format(@"
+
+                int _pagesize = 30;
+                int page = 1;
+                if (Request.Query["page"] != null) {
+                    bool b = int.TryParse(Request.Query["page"], out page);
+                    if (!b) page = 1;
+                }
+
+                string sql = $@"
                     select t1.OrderId,
                         t2.Express,
                         t1.CreateTime,
@@ -61,15 +70,33 @@ namespace Bilin3d.Modules {
                     left join t_address  t4 on t4.Id=t1.AddressId
                     left join t_material  t5 on t5.MaterialId=t2.MaterialId
                     left join t_supplier t6 on t6.SupplierId=t2.SupplierId
-                    where t1.UserId='{0}' {1}
-                    order by t1.EditTime desc", Page.UserId, condition))
+                    where t1.UserId='{Page.UserId}' {condition}
+                    order by t1.EditTime desc LIMIT {_pagesize * (page - 1)},{_pagesize * page}";
+                var orders = db.Select<OrderModel>(sql)
                     //.GroupBy(i => new { i.OrderId, i.CreateTime, i.Consignee, i.StateName })
                     .GroupBy(i => i.OrderId)
                     .ToDictionary(k => k.Key, v => v.ToList());
 
+                sql= $@"select count(1)
+                    from t_order  t1
+                    left join t_orderdetail  t2 on t2.OrderId=t1.OrderId
+                    left join t_orderstate   t3 on t3.Id=t1.StateId
+                    left join t_address  t4 on t4.Id=t1.AddressId
+                    left join t_material  t5 on t5.MaterialId=t2.MaterialId
+                    left join t_supplier t6 on t6.SupplierId=t2.SupplierId
+                    where t1.UserId='{Page.UserId}' {condition}";
+                int _total_count = db.Scalar<int>(sql);
+
+                var pagelist = new PagedList<OrderModel>() {
+                    //models = orders,
+                    total_count = _total_count,
+                    page_size = _pagesize
+                };
+
                 base.Page.Title = "我的订单";
                 base.Model.OrderStates = orderStates;
                 base.Model.Orders = orders; 
+                base.Model.Pagelist = pagelist;
                 return View["Index", base.Model];
             };
 

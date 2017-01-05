@@ -4,7 +4,7 @@ using System.Web;
 using System.Xml;
 using System.Security.Cryptography;
 using System.Text;
-using LitJson;
+//using LitJson;
 using Newtonsoft.Json;
 
 namespace WxPayAPI
@@ -176,8 +176,8 @@ namespace WxPayAPI
         */
         public string ToJson()
         {          
-            string jsonStr = JsonMapper.ToJson(m_values);
-            //string jsonStr = JsonConvert.SerializeObject(m_values);
+            //string jsonStr = JsonMapper.ToJson(m_values);
+            string jsonStr = JsonConvert.SerializeObject(m_values);
             return jsonStr;
         }
 
