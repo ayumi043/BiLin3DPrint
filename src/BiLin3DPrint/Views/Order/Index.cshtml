@@ -26,8 +26,8 @@
 @section Javascript{
     <script>
         $(function () {
-            $('.hoverSelector').on('hover', function (e) {
-                $('.hoverSelectorBlock', this).toggleClass('show');
+            $('.hoverSelector').on('click', function (e) {
+                $('.hoverSelectorBlock').toggleClass('show');
                 e.stopPropagation();
             });            
         });
@@ -44,7 +44,7 @@
                     <td class="text-center" style="width:180px;">
                         <ul class="orderstate navbar-right">
                             <li class="dropdown hoverSelector">
-                                <a id="drop3" href="#" class="dropdown-toggle">
+                                <a id="drop3" class="dropdown-toggle">
                                     <span id="statename">
 
                                        @if (Request.Query["name"] == null) { 
