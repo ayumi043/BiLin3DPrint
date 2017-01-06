@@ -25,29 +25,30 @@ namespace Bilin3d.Modules {
                 return null;
             };
 
-            Get["/"] = parameters => {
+            Get("/", parameters => {
                 var users = db.Select<UserModel>("select * from T_User");
                 base.Page.Title = "Home";
 
                 //return View["Admin/Index", Model];
                 return Response.AsRedirect("./order");
-            };
+            });
 
-            Get["/users"] = parameters => {
+            Get("/users", parameters => {
                 string email = Request.Query["email"];
                 string strWhere = " 1=1 ";
                 if (email != null) {
                     //strWhere += $" and email like '%{email}%' ";
                     strWhere += $" and email like @email ";
-                }
+                } 
+
                 //var users = db.Select<UserModel>($"select * from T_User where {strWhere}");
                 var users = db.Select<UserModel>($"select * from T_User where {strWhere}", new { email = "%" + email + "%", id = "" });
                 base.Page.Title = "用户";
                 Model.Users = users;
                 return View["Admin/User/Index", Model];
-            };
+            });
 
-            Post["/user/{id}-{state}"] = parameters => {
+            Post("/user/{id}-{state}", parameters => {
                 var id = parameters.id;
                 string state = parameters.state;
                 List<string> states = new List<string> { "0", "1", "2" };
@@ -56,9 +57,9 @@ namespace Bilin3d.Modules {
                 }
                 db.ExecuteNonQuery($"update t_user set state='{state}' where id={id};");
                 return Response.AsJson(new { message = "success" });
-            };
+            });
 
-            Get["/suppliers"] = parameters => {
+            Get("/suppliers", parameters => {
                 string suppliername = Request.Query["suppliername"];
                 string strWhere = " 1=1 ";
                 if (suppliername != null) {
@@ -68,9 +69,9 @@ namespace Bilin3d.Modules {
                 base.Page.Title = "供应商";
                 Model.Suppliers = suppliers;
                 return View["Admin/Supplier/Index", Model];
-            };
+            });
 
-            Post["/supplier/{id}-{state}"] = parameters => {
+            Post("/supplier/{id}-{state}", parameters => {
                 var id = parameters.id;
                 string state = parameters.state;
                 List<string> states = new List<string> { "0", "1", "2" };
@@ -79,26 +80,26 @@ namespace Bilin3d.Modules {
                 }
                 db.ExecuteNonQuery($"update T_Supplier set state='{state}' where supplierId='{id}';");
                 return Response.AsJson(new { message = "success" });
-            };
+            });
 
-            Get["/printer"] = parameters => {
+            Get("/printer", parameters => {
                 Page.Title = "打印机";
                 return View["Admin/Printer/Index", Model];
-            };
+            });
 
-            Post["/printer"] = parameters => {
+            Post("/printer", parameters => {
                 return null;
-            };
+            });
 
-            Get["/printer/brand"] = parameters => {
+            Get("/printer/brand", parameters => {
                 return null;
-            };
+            });
 
-            Post["/printer/brand"] = parameters => {
+            Post("/printer/brand", parameters => {
                 return null;
-            };
+            });
 
-            Get["/order"] = parameters => {
+            Get("/order", parameters => {
                 string stateid = Request.Query["state"].Value;
                 if (stateid != null) {
                     if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$")) {  //数量只能是大于0的数字
@@ -147,16 +148,16 @@ namespace Bilin3d.Modules {
                 base.Model.OrderStates = orderStates;
                 base.Model.Orders = orders;
                 return View["Admin/Order/Index", base.Model];
-            };
+            });
 
-            Post["/orderState/{orderid}"] = parameters => {
+            Post("/orderState/{orderid}", parameters => {
                 var orderId = parameters.orderId;
                 var i = db.ExecuteNonQuery("update t_order set StateId='5' where OrderId=@OrderId;", new { OrderId = orderId });
                 if (i > 0) {
                     return Response.AsJson(new { message = "success" });
                 }
                 return Response.AsJson(new { message = "error" }, HttpStatusCode.BadRequest);
-            };
+            });
             
 
         }
@@ -165,19 +166,19 @@ namespace Bilin3d.Modules {
     public class AdminLoginModule : BaseModule {
         public AdminLoginModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) {
                         
-            Get["/bilinadminlogin"] = parameters => {
+            Get("/bilinadminlogin", parameters => {
                 base.Page.Title = "管理员后台";
                 return View["Admin/Login", base.Model];
-            };
+            });
 
-            Post["/bilinadminlogin"] = parameters => {
+            Post("/bilinadminlogin",parameters => {
                 string username = Request.Form.username;
                 string password = Request.Form.password;
                 if (username == "bilin3d" && password == "bilin3d2013") {
                     Session["adminid"] = "bilin";
                 }                
                 return Response.AsRedirect("/bilinadmin/");
-            };
+            });
 
         }
     }

@@ -6,9 +6,9 @@ using System.Web;
 
 namespace Bilin3d.Models {
 
-    [Alias("T_User")]
+    [Alias("t_user")]
     public class UserModel {
-        public int Id { get; set; }               
+        public int Id { get; set; }                         
         public Guid UserGuid { get; set; }
         public string Email { get; set; }
         public string NickName { get; set; }

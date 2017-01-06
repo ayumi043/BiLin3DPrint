@@ -16,7 +16,7 @@ namespace Bilin3d.Modules {
         public CartModule(IDbConnection db, ILog log, IRootPathProvider pathProvider)
             : base("/car") {
 
-            Get["/"] = parameters => {
+            Get("/", parameters => {
                 base.Page.Title = "购物车";
                 if (base.Page.IsAuthenticated) {
                     var cars = db.Select<CarModel>(string.Format(@"
@@ -67,9 +67,9 @@ namespace Bilin3d.Modules {
                     base.Model.Cars = cars;
                 }
                 return View["CheckCar", base.Model];
-            };
+            });
 
-            Post["/"] = parameters => {
+            Post("/", parameters => {
                 var cardetailids = Request.Form.cardetailid;
                 string[] nums = Request.Form.num.Value.Split(',');
                 string[] ids = cardetailids.Value.Split(',');
@@ -151,9 +151,9 @@ namespace Bilin3d.Modules {
                 //log.Error(cardetailids);
                 //return Response.AsRedirect("/account/checkout");
                 return null;
-            };
+            });
 
-            Get["/checkout"] = parameters => {
+            Get("/checkout", parameters => {
                 this.RequiresAuthentication();
                 base.Page.Title = "结账";
                 var cars = db.Select<CarModel>(string.Format(@"
@@ -189,9 +189,9 @@ namespace Bilin3d.Modules {
                 base.Model.Cars = cars;
                 base.Model.Addresses = addresses;
                 return View["CheckOut", base.Model];
-            };
+            });
 
-            Post["/add"] = parameters => {
+            Post("/add", parameters => {
                 //string matid = Request.Form.matid;
                 //string filename = Request.Form.filename;                
                 //string area = Request.Form.Area;
@@ -378,10 +378,10 @@ namespace Bilin3d.Modules {
                 }
                 return null;
                 //return Response.AsJson(new { result = "success" });
-            };
+            });
 
             //获取顶部的购物车的商品
-            Get["/get"] = parameters => {
+            Get("/get",parameters => {
                 if (base.Page.IsAuthenticated) {
                     var cars = db.Select<CarModel>(@"
                         select t1.amount,
@@ -449,10 +449,10 @@ namespace Bilin3d.Modules {
                         FileName = i.FileName.Split('$').Last()
                     }));
                 }
-            };
+            });
 
             //删除购物车里的商品
-            Post["/material/del/{id}-{carid}"] = parameters => {
+            Post("/material/del/{id}-{carid}", parameters => {
                 string id = parameters.id;
                 string carid = parameters.carid;
                 CarCount carcount;
@@ -487,7 +487,7 @@ namespace Bilin3d.Modules {
                 }
                 //return Response.AsJson(new { result = "success: " + parameters.id + "!" });
                 return Response.AsJson(carcount);
-            };
+            });
 
         }
 

@@ -19,7 +19,7 @@ namespace Bilin3d.Modules {
     public class AccountModule : BaseModule {
         public AccountModule(IDbConnection db, ILog log, IRootPathProvider pathProvider)
             : base("/account") {
-            Get["/logon"] = parameters => {
+            Get("/logon", parameters => {
                 base.Page.Title = "用户登录";
 
                 //var loginModel = new LoginModel();
@@ -27,9 +27,9 @@ namespace Bilin3d.Modules {
                 base.Model.LoginModel = loginModel;
 
                 return View["LogOn", base.Model];
-            };
+            });
 
-            Post["/logon"] = parameters => {
+            Post("/logon", parameters => {
                 var model = this.Bind<LoginModel>();
                 var result = this.Validate(model);
 
@@ -63,9 +63,9 @@ namespace Bilin3d.Modules {
                 ConvertTempCar(db, pathProvider, userGuid);
 
                 return this.LoginAndRedirect(userGuid.Value, expiry);
-            };
+            });
 
-            Get["/logoff"] = parameters => {
+            Get("/logoff", parameters => {
                 if (Session["TempUserId"] != null) {
                     Session.Delete("TempUserId");
                 }
@@ -74,18 +74,18 @@ namespace Bilin3d.Modules {
                 }
 
                 return this.LogoutAndRedirect("/");
-            };
+            });
 
-            Get["/register"] = parameters => {
+            Get("/register", parameters => {
                 base.Page.Title = "用户注册";
 
                 var registerModel = new RegisterModel();
                 base.Model.RegisterModel = registerModel;
 
                 return View["Register", base.Model];
-            };
+            });
 
-            Post["/register"] = parameters => {
+            Post("/register", parameters => {
                 var model = this.Bind<RegisterModel>();
                 var result = this.Validate(model);
 
@@ -122,14 +122,14 @@ namespace Bilin3d.Modules {
                 ConvertTempCar(db, pathProvider, userGuid);
 
                 return this.LoginAndRedirect(userGuid.Value, expiry);
-            };
+            });
 
-            Get["/findpwd"] = parameters => {
+            Get("/findpwd", parameters => {
                 base.Page.Title = "密码找回";
                 return View["FindPwd", base.Model];
-            };
+            });
 
-            Post["/findpwd"] = parameters => {
+            Post("/findpwd", parameters => {
                 string email = Request.Form.Email;
                 if (!Regex.IsMatch(email, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$")) {
                     base.Page.Errors.Add(new ErrorModel() { Name = "", ErrorMessage = "您输入的email格式不正确!" });
@@ -174,17 +174,17 @@ namespace Bilin3d.Modules {
                 //base.Model.Message = string.Format(@"密码已发送到您的邮箱中了，请查收!   {0}", email_url);
                 //return View["FindPwdResult", base.Model];
                 return Response.AsJson(new { message = string.Format(@"密码已发送到您的邮箱中了，请查收!   {0}", email_url) });
-            };
+            });
                                                           
-            Get["/info"] = parameters => {
+            Get("/info", parameters => {
                this.RequiresAuthentication();
                 var user = db.Single<UserModel>("select * from t_user where Id=@Id", new { Id = Page.UserId });
                 base.Page.Title = "个人信息";
                 base.Model.User = user;
                 return View["Info", base.Model];
-            };
+            });
 
-            Post["/info"] = parameters => {
+            Post("/info", parameters => {
                 this.RequiresAuthentication();
                 string avatars = Request.Form.avatars;
                 string nickname = Request.Form.nickname;
@@ -200,9 +200,9 @@ namespace Bilin3d.Modules {
 	                    Id = '{3}';", nickname, tel, avatars, Page.UserId);
                 db.ExecuteNonQuery(sql);
                 return Response.AsJson(new { message = "success" });
-            };
+            });
 
-            Post["/info/uploadimg"] = parameters => {
+            Post("/info/uploadimg", parameters => {
                 this.RequiresAuthentication();
                 string uploadDirectory;
                 uploadDirectory = Path.Combine(pathProvider.GetRootPath(), "Content", "uploads", "avatars");
@@ -230,9 +230,9 @@ namespace Bilin3d.Modules {
                 }
 
                 return Response.AsJson(new { filename = _filename });
-            };
+            });
 
-            Get["/address"] = parameters => {
+            Get("/address", parameters => {
                 this.RequiresAuthentication();
                 var addresses = db.Select<AddressModel>(string.Format(@"
                         select *
@@ -242,9 +242,9 @@ namespace Bilin3d.Modules {
                 base.Page.Title = "收货地址管理";
                 base.Model.Addresses = addresses;
                 return View["Address", base.Model];
-            };
+            });
 
-            Post["/address"] = parameters => {
+            Post("/address", parameters => {
                 this.RequiresAuthentication();
                 string id = Request.Form.id;
                 int i = db.ExecuteNonQuery(string.Format(@"
@@ -254,9 +254,9 @@ namespace Bilin3d.Modules {
                     return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
                 }
                 return 200;
-            };
+            });
 
-            Get["/address/{id}"] = parameters => {
+            Get("/address/{id}", parameters => {
                 this.RequiresAuthentication();
                 string id = parameters.id;
                 var address = db.Select<AddressModel>(string.Format(@"
@@ -264,9 +264,9 @@ namespace Bilin3d.Modules {
                 base.Page.Title = address.Consignee;
                 base.Model.Address = address;
                 return View["AddressEdit", base.Model];
-            };
+            });
 
-            Post["/address/{id}"] = parameters => {
+            Post("/address/{id}", parameters => {
                 this.RequiresAuthentication();
                 var model = this.Bind<AddressModel>();
                 var result = this.Validate(model);
@@ -305,9 +305,9 @@ namespace Bilin3d.Modules {
                     model.Tel, model.Company, model.State, model.Id, Page.UserId);
                 db.ExecuteNonQuery(sql);
                 return 200;
-            };
+            });
 
-            Post["/address/add"] = parameters => {
+            Post("/address/add", parameters => {
                 this.RequiresAuthentication();
                 var model = this.Bind<AddressModel>();
                 var result = this.Validate(model);
@@ -349,7 +349,7 @@ namespace Bilin3d.Modules {
                     select * from t_address where id=(select max(id) from t_address where userid='{0}')", Page.UserId)).FirstOrDefault();
 
                 return Response.AsJson(address);
-            };
+            });
         }
 
         private void ConvertTempCar(IDbConnection db, IRootPathProvider pathProvider, Guid? userGuid)

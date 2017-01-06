@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "log4net": "2.0.6",
-    "Microsoft.AspNet.Razor": "2.0.30506.0",
+    "Microsoft.AspNet.Razor": "3.2.3",
     "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.AspNetCore.Owin": "1.1.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.1.0",
@@ -12,8 +12,9 @@
     "Nancy": "2.0.0-clinteastwood",
     "Nancy.Authentication.Forms": "2.0.0-clinteastwood",
     "Nancy.Validation.DataAnnotations": "2.0.0-clinteastwood",
-    "Nancy.Viewengines.Razor": "2.0.0-clinteastwood",
+    "Nancy.Viewengines.Razor":  "2.0.0-clinteastwood",
     "ServiceStack.OrmLite.MySql": "4.5.4",
+    "System.ComponentModel.Annotations": "4.1.0",
     "System.Data.Common": "4.3.0",
     "ThoughtWorks.QRCode": "1.1.0",
     "Yiauo.Three": "1.0.1"

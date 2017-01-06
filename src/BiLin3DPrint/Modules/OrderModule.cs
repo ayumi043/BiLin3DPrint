@@ -23,7 +23,7 @@ namespace Bilin3d.Modules {
 
             this.RequiresAuthentication();
 
-            Get["/"] = parameters => {
+            Get("/", parameters => {
                 string stateid = Request.Query["state"].Value;
                 if (stateid != null) {
                     if (!Regex.IsMatch(stateid, @"^[1-9]\d*?$")) {
@@ -98,9 +98,9 @@ namespace Bilin3d.Modules {
                 base.Model.Orders = orders; 
                 base.Model.Pagelist = pagelist;
                 return View["Index", base.Model];
-            };
+            });
 
-            Post["/"] = parameters => {
+            Post("/",parameters => {
                 string addressid = Request.Form.addressid;
                 string payid = Request.Form.payid;
                 string remark = Request.Form.remark;
@@ -145,9 +145,9 @@ namespace Bilin3d.Modules {
                     message = "success",
                     orderId = orderid
                 });
-            };
+            });
 
-            Get["/{id}"] = parameters => {
+            Get("/{id}", parameters => {
                 string id = parameters.id;
                 var orders = db.Select<OrderModel>($@"
                     select t1.OrderId,
@@ -175,9 +175,9 @@ namespace Bilin3d.Modules {
                 base.Page.Title = "订详明细";
                 base.Model.Orders = orders;
                 return View["Detail", base.Model];
-            };
+            });
 
-            Get["qrcode/{orderId}"] = parameters => {
+            Get("qrcode/{orderId}", parameters => {
                 string orderId = parameters.orderId;
                 var order = db.Single<OrderModel>("select OrderId,Amount from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
                 var response = new Response();
@@ -194,9 +194,9 @@ namespace Bilin3d.Modules {
                     }
                 };
                 return response;
-            };
+            });
 
-            Get["pay/{orderId}"] = parameters => {
+            Get("pay/{orderId}", parameters => {
                 Page.Title = "付款";
                 var orderId = parameters.orderId;
                 var amount = db.Single<string>("select amount from t_order where OrderId=@OrderId and UserId=@UserId and StateId=1", new { UserId = Page.UserId, OrderId = orderId });
@@ -207,28 +207,28 @@ namespace Bilin3d.Modules {
                 Model.orderId = orderId;
                 Model.amount = decimal.Parse(amount).ToString("f2");
                 return View["Pay", base.Model];
-            };
+            });
 
-            Get["notice/{orderId}"] = parameters => {
+            Get("notice/{orderId}", parameters => {
                 var orderId = parameters.orderId;
                 var stateId = db.Single<string>("select StateId from t_order where OrderId=@OrderId and UserId=@UserId", new { UserId = Page.UserId, OrderId = orderId });
                 if (stateId == "2") {
                     return Response.AsJson(new { message = "success" });
                 }
                 return Response.AsJson(new { message = "error" });
-            };
+            });
 
-            Get["paysuccess"] = _ => {
+            Get("paysuccess", _ => {
                 base.Page.Title = "付款成功！";
                 return View["PaySuccess", base.Model];
-            };
+            });
 
         }
 
         public class NativeNotifyModule : BaseModule {
             public NativeNotifyModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) {
 
-                Post["/WxPayNotify"] = parameters => {
+                Post("/WxPayNotify", parameters => {
                     NativeNotify nativeNatify = new NativeNotify(Context);
                     var result = nativeNatify.ProcessNotify();
                     if (result.Item1 == false) {
@@ -253,7 +253,7 @@ namespace Bilin3d.Modules {
                                             , new { OrderId = orderId });
                     }
                     return null;
-                };
+                });
 
             }
         }

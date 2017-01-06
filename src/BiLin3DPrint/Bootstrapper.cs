@@ -16,38 +16,44 @@ using System.IO;
 using System.Threading.Tasks;
 using BiLin3D;
 using Microsoft.Extensions.Configuration;
+using Nancy.Configuration;
 
 namespace Bilin3d {
     public class Bootstrapper : DefaultNancyBootstrapper {
-              
+
+        public override void Configure(INancyEnvironment environment) {
+            // 开发模式下不缓存试图，并显示错误信息
+            #if DEBUG
+                environment.Views(runtimeViewUpdates: true); 
+                environment.Tracing(enabled: false, displayErrorTraces: true);
+            #endif
+        }
+
         protected override void ConfigureConventions(NancyConventions conventions) {
             base.ConfigureConventions(conventions);
 
             //启用错误提示
             //StaticConfiguration.DisableErrorTraces = false;
-
+            
             conventions.StaticContentsConventions.Add(
                 StaticContentConventionBuilder.AddDirectory("assets", @"public/assets")
             );  
             conventions.StaticContentsConventions.Add(
                 StaticContentConventionBuilder.AddDirectory("resource", @"public/resource")
             );
-            //conventions.StaticContentsConventions.Add(
-            //     StaticContentConventionBuilder.AddDirectory("public", @"public")
-            //);
             conventions.StaticContentsConventions.Add(
                 StaticContentConventionBuilder.AddDirectory("", @"public")
             );
         }
-      
+
 
         // 只在启动时触发1次
         protected override void ConfigureApplicationContainer(TinyIoCContainer container) {
             base.ConfigureApplicationContainer(container);
            
             // Razor
-            container.Register<IViewEngine, Nancy.ViewEngines.Razor.RazorViewEngine>();
-            container.Register<Nancy.ViewEngines.Razor.IRazorConfiguration, Nancy.ViewEngines.Razor.DefaultRazorConfiguration>();
+            //container.Register<IViewEngine, Nancy.ViewEngines.Razor.RazorViewEngine>();
+            //container.Register<Nancy.ViewEngines.Razor.IRazorConfiguration, Nancy.ViewEngines.Razor.DefaultRazorConfiguration>();
             
             // log4net
             FileInfo log4NetConfig = new FileInfo(System.IO.Directory.GetCurrentDirectory() + "\\log4net.config");
@@ -62,11 +68,11 @@ namespace Bilin3d {
             container.Register(dbFactory, "dbFactory");
         }
 
-        protected override IEnumerable<Type> ViewEngines {
-            get {
-                return new[] { typeof(Nancy.ViewEngines.Razor.RazorViewEngine) };
-            }
-        }
+        //protected override IEnumerable<Type> ViewEngines {
+        //    get {
+        //        return new[] { typeof(Nancy.ViewEngines.Razor.RazorViewEngine) };
+        //    }
+        //}
 
         // 每次请求都会触发,一个页面会触发多次
         protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) {
@@ -113,19 +119,12 @@ namespace Bilin3d {
             };
 
         }
-
-        protected override IRootPathProvider RootPathProvider {
-            get { return new vNextRootPathProvider(); }
-        }
     }
 
     public class vNextRootPathProvider : IRootPathProvider {
-        //private string BasePath = Startup.Environment.ApplicationBasePath;
-        private string BasePath = Startup.Environment.ContentRootPath;
-
         public string GetRootPath() {
             //return System.IO.Directory.GetCurrentDirectory();
-            return BasePath;
+            return Startup.Environment.ContentRootPath;
         }
     }
 

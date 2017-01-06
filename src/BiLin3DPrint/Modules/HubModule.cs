@@ -24,13 +24,13 @@ namespace Bilin3d.Modules {
 
             this.RequiresAuthentication();
 
-            Get["/"] = parameters => {
+            Get("/", parameters => {
                 Page.Title = "HUB首页";
                 return Response.AsRedirect("/hub/printer");
                 //return View["Index", Model];
-            };
+            });
 
-            Get["/add"] = parameters => {
+            Get("/add", parameters => {
                 Page.Title = "成为HUB";
                 var supplierId = db.Single<string>("select SupplierId from t_user where id=@id limit 1",
                     new { id = Page.UserId });
@@ -47,9 +47,9 @@ namespace Bilin3d.Modules {
                 Model.Expresses = expresses;
                 Model.countNoAudit = CountNoAudit(db);
                 return View["Add", Model];
-            };
+            });
 
-            Post["/add"] = parameters => {
+            Post("/add", parameters => {
                 var supplierId = db.Single<string>("select SupplierId from t_user where id=@id limit 1",
                     new { id = Page.UserId });
                 //已经是hub了
@@ -259,9 +259,9 @@ namespace Bilin3d.Modules {
                 Model.Message = "添加Hub成功!";
                 Model.Url = "/hub";
                 return View["Success", Model];
-            };
+            });
 
-            Get["/edit"] = parameters => {
+            Get("/edit", parameters => {
                 var supplier = db.Single<SupplierModel>($@"
                     select Tel,
                         QQ,
@@ -287,13 +287,13 @@ namespace Bilin3d.Modules {
                 Model.SupplierModel = supplier;
 
                 return View["Edit", Model];
-            };
+            });
 
-            Post["/edit"] = parameters => {
+            Post("/edit", parameters => {
                 return null;
-            };
+            });
 
-            Get["/printer.js"] = parameters => {
+            Get("/printer.js", parameters => {
                 string str = "var printers = [";
                 var printers = db.Select<PrinterModel>("SELECT PrinterId,Fname FROM t_printer WHERE State='0'");
                 printers.ForEach(i => {
@@ -301,9 +301,9 @@ namespace Bilin3d.Modules {
                 });
                 str = str.TrimEnd(',') + "];";
                 return Response.AsText(str);
-            };
+            });
 
-            Get["/printer"] = parameters => {
+            Get("/printer", parameters => {
                 string sql = "select AccuracyId,Fname from t_printaccuracy;";
                 var printerAccuracys = db.Select<PrinterAccuracyModel>(sql);
                 sql = "select CompleteId,Fname from t_printcomplete;";
@@ -325,9 +325,9 @@ namespace Bilin3d.Modules {
                 Model.completeOpt = completeOpt;
                 Model.countNoAudit = CountNoAudit(db);
                 return View["Print", Model];
-            };
+            });
 
-            Get["/printer/material/list"] = parameters => {
+            Get("/printer/material/list", parameters => {
                 string sql = $@"
                     select t1.SupplierId ,t1.PrinterId, t2.fname as PrinterName, t1.State as PrinterState, t4.MaterialId,t4.Name as MaterialName
                     from t_supplier_printer t1
@@ -353,9 +353,9 @@ namespace Bilin3d.Modules {
                             result = x
                         })
                     , Nancy.HttpStatusCode.OK);
-            };
+            });
 
-            Post["/printer/material/{printerid}"] = parameters => {
+            Post("/printer/material/{printerid}", parameters => {
                 string printerid = parameters.printerid;
                 string sql = $@"
                     select t2.MaterialId,t2.Name
@@ -368,9 +368,9 @@ namespace Bilin3d.Modules {
                     order by t1.CreateTime desc;";
                 var materials = db.Select<Material>(sql);
                 return Response.AsJson(materials, Nancy.HttpStatusCode.OK);
-            };
+            });
 
-            Post["/printer/state"] = parameters => {
+            Post("/printer/state", parameters => {
                 string printerid = Request.Form.printerid;
                 string stateid = Request.Form.stateid;
 
@@ -390,9 +390,9 @@ namespace Bilin3d.Modules {
                 string sql = $"update t_supplier_printer set state='{stateid}' where SupplierId=(select SupplierId from t_user where id='{Page.UserId}') and  PrinterId='{printerid}';";
                 db.ExecuteNonQuery(sql);
                 return Response.AsJson(new { message = message }, Nancy.HttpStatusCode.OK);
-            };
+            });
 
-            Post["/printer/add"] = parameters => {
+            Post("/printer/add", parameters => {
                 string printerid = Request.Form.printerid;
                 string sql = $@"select count(1) 
                                 from t_supplier_printer 
@@ -416,9 +416,9 @@ namespace Bilin3d.Modules {
                                 VALUES('{Guid.NewGuid().ToString("N")}',(select SupplierId from t_user where id='{Page.UserId}'),'{printerid}');";
                 db.ExecuteNonQuery(sql);
                 return null;
-            };
+            });
 
-            Get["/material.js"] = parameters => {
+            Get("/material.js", parameters => {
                 string str = "var materials = [";
                 var materials = db.Select<Material>("SELECT * FROM t_material WHERE State='0'");
                 materials.ForEach(i => {
@@ -426,15 +426,15 @@ namespace Bilin3d.Modules {
                 });
                 str = str.TrimEnd(',') + "];";
                 return Response.AsText(str);
-            };
+            });
 
-            Get["/material/{id}"] = parameters => {
+            Get("/material/{id}", parameters => {
                 var materialId = parameters.id;
                 var material = db.Single<Material>("select * from t_material where MaterialId=@MaterialId", new { MaterialId = materialId });
                 return Response.AsJson(material);                
-            };
+            });
             
-            Post["/printer/material/add"] = parameters => {
+            Post("/printer/material/add", parameters => {
                 string printerid = Request.Form.printerid;
                 string materialid = Request.Form.materialid;
                 string completeid = Request.Form.completeid;
@@ -470,9 +470,9 @@ namespace Bilin3d.Modules {
                         );";
                 db.ExecuteNonQuery(sql);
                 return null;
-            };
+            });
 
-            Post["/printer/material/delete"] = parameters => {
+            Post("/printer/material/delete", parameters => {
                 string printerid = Request.Form.printerid;
                 string materialid = Request.Form.materialid;   
                 string sql = $@"
@@ -481,13 +481,13 @@ namespace Bilin3d.Modules {
                         and PrinterId='{printerid}' and MaterialId='{materialid}';";
                 db.ExecuteNonQuery(sql);
                 return null;
-            };
+            });
 
-            Get["/blance"] = parameters => {
+            Get("/blance", parameters => {
                 return Response.AsText("账户余额", "text/html; charset=utf-8");
-            };
+            });
 
-            Get["/order"] = parameters => {
+            Get("/order", parameters => {
                 var orders = db.Select<OrderModel>($@"
                     select t1.OrderId,
                         t1.CreateTime,
@@ -521,9 +521,9 @@ namespace Bilin3d.Modules {
                 base.Model.Orders = orders;
                 base.Model.countNoAudit = CountNoAudit(db);
                 return View["Order", base.Model];
-            };
+            });
 
-            Post["/order/express/{orderdetailId}"] = parameters => {
+            Post("/order/express/{orderdetailId}", parameters => {
                 string orderdetailId = parameters.orderdetailId;
                 string express = Request.Form.express;
                 int i = db.ExecuteNonQuery("update t_orderdetail set express=@express where id=@orderdetailId", 
@@ -532,7 +532,7 @@ namespace Bilin3d.Modules {
                     return Response.AsJson(new { message = "success" });
                 }
                 return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
-            };
+            });
             
         }
 

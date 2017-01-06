@@ -13,12 +13,13 @@ using Nancy;
 using Bilin3d;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Nancy.Configuration;
 
 namespace BiLin3D {
     public class Startup {
-
+               
         public static IHostingEnvironment Environment { get; private set; }
-        public static IConfiguration Configuration { get; set; }
+        public static IConfiguration Configuration { get; set; }               
 
         public Startup(IHostingEnvironment env) {
             Environment = env;
@@ -51,7 +52,7 @@ namespace BiLin3D {
             //app.UseOwin(x => {
             //    x.UseNancy(opts => opts.Bootstrapper = new Bootstrapper());
             //});
-
         }
+
     }
 }

@@ -16,20 +16,20 @@ namespace Bilin3d.Modules {
     public class PrintModule : BaseModule {
         public PrintModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) : base("/print") {
 
-            Get["/"] = parameters => {
+            Get("/",parameters => {
                 base.Page.Title = "3D打印";
                 return View["Index", base.Model];
-            };
+            });
 
-            Get["/materials"] = parameters => {
+            Get("/materials", parameters => {
                 var materials = db.Select<Material>(q => q.State == 0);
                 return Response.AsJson(materials);
                 //return Response.AsJson(( new List<string> { "Foo","Bar","Hello","World"}).Select(i => new {
                 //    message = i                    
                 //}));
-            };
+            });
 
-            Post["/upload"] = parameters => {
+            Post("/upload",parameters => {
                 string uploadDirectory;
                 string filepath = "";
                 if (Context.CurrentUser == null) {
@@ -109,9 +109,9 @@ namespace Bilin3d.Modules {
 
                 //base.Page.Title = "上传成功";
                 //return View["Index", base.Model];
-            };
+            });
 
-            Get["/suppliers"] = parameters => {
+            Get("/suppliers", parameters => {
                 string materialid = Request.Query["materialid"].Value;
                 string _distance = Request.Query["distance"].Value;
                 double distance = 20000;
@@ -163,7 +163,7 @@ namespace Bilin3d.Modules {
                     supplierprintermaterialid =i.SupplierPrinterMaterialId
                 }));
 
-            };
+            });
         }
 
     }

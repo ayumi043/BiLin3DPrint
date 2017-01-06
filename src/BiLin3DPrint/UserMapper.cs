@@ -9,7 +9,8 @@ using Nancy.Security;
 using System.Data;
 using ServiceStack.OrmLite;
 using ServiceStack.Data;
-
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Bilin3d {
     public class UserMapper : IUserMapper {
@@ -21,20 +22,20 @@ namespace Bilin3d {
             this.DB = db;
         }              
 
-        public IUserIdentity GetUserFromIdentifier(Guid identifier, NancyContext context) {
-           
-            var userRecord = DB.Select<UserModel>(q => q.UserGuid == identifier).FirstOrDefault();
+        public ClaimsPrincipal GetUserFromIdentifier(Guid identifier, NancyContext context) {
+            //var userRecord = DB.Select<UserModel>(q => q.UserGuid == identifier).FirstOrDefault();
+            var userRecord = DB.Single<string>("select Email from T_User where UserGuid=@userGuid", new { userGuid = identifier });
+            return userRecord == null
+                       ? null
+                       : new ClaimsPrincipal(new GenericIdentity(userRecord));
 
-            return userRecord == null ? null : new UserIdentity() { UserName = userRecord.Email };
         }
 
         public Guid? ValidateUser(string email, string password) {
-            //var userRecord = DB.Select<UserModel>(q => q.Email == email && q.PassWord == EncodePassword(password)).FirstOrDefault();
-            //var userRecord = DB.Select<UserModel>(q => q.Email == email && q.PassWord == password).FirstOrDefault();
-            var userRecord = DB.Single<UserModel>(q => q.Email == email && q.PassWord == password);
+            //var userRecord = DB.Single<UserModel>(q => q.Email == email && q.PassWord == password);
+            var userRecord = DB.Single<string>("select UserGuid from T_User where Email=@email and Password=@password", new { email=email ,password=password});
             if (userRecord == null) return null;
-
-            return userRecord.UserGuid;
+            return Guid.Parse(userRecord);
         }
 
         public Guid? ValidateRegisterNewUser(RegisterModel newUser) {
@@ -58,8 +59,7 @@ namespace Bilin3d {
         }
 
         private string EncodePassword(string originalPassword) {
-            if (originalPassword == null)
-                return String.Empty;
+            if (originalPassword == null) return String.Empty;
 
             //Declarations
             Byte[] originalBytes;

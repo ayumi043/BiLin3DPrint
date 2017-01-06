@@ -18,15 +18,15 @@ namespace Bilin3d.Modules {
         public WapModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) 
             : base("/m") {
 
-            Get["/"] = parameters => {
+            Get("/", parameters => {
                 return null;
-            };
+            });
             
-            Get["/order"] = _ => {
+            Get("/order",  _ => {
                 return Response.AsRedirect($"https://open.weixin.qq.com/connect/oauth2/authorize?appid={WxPayConfig.APPID}&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fmyorder&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
-            };
+            });
 
-            Get["/myorder"] = _ => {
+            Get("/myorder", _ => {
                 string code = Request.Query["code"];
                 string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
                 WebClient wc = new WebClient();
@@ -49,9 +49,9 @@ namespace Bilin3d.Modules {
                 //Model.Userid = "";
                 //Session["userid"] = "";
                 return View["Wap/Myorder", base.Model];
-            };
+            });
 
-            Post["/bindaccountwx/{openid}"] = parameters => {
+            Post("/bindaccountwx/{openid}", parameters => {
                 if (Session["userid"] != null) {
                     string openid = parameters.openid;
                     string email = Request.Form["username"];
@@ -63,9 +63,9 @@ namespace Bilin3d.Modules {
                     }                    
                 }
                 return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
-            };
+            });
 
-            Get["/order/{userid}"] = parameters => {
+            Get("/order/{userid}",parameters => {
                 if (Session["userid"] != null) {
                     string userid = parameters.userid;
                     var orders = db.Select<OrderModel>($@"
@@ -107,9 +107,9 @@ namespace Bilin3d.Modules {
                     return Response.AsJson(_orders);
                 }
                 return Response.AsJson(new { message = "error" }, Nancy.HttpStatusCode.BadRequest);
-            };
+            });
 
-            Get["/qrcode/{orderId}"] = parameters => {
+            Get("/qrcode/{orderId}", parameters => {
                 if (Session["userid"] != null) {
                     string orderId = parameters.orderId;
                     var order = db.Single<OrderModel>("select OrderId,Amount from t_order where OrderId=@OrderId and StateId=1", new { OrderId = orderId });
@@ -129,12 +129,12 @@ namespace Bilin3d.Modules {
                     return response;
                 }
                 return null;                
-            };
+            });
 
-            Get["/succ1"] = _ => {
+            Get("/succ1", _ => {
                 base.Page.Title = "比邻3d订单查询";
                 string wxOpenid = "";
-                string wxAccount = "";
+                //string wxAccount = "";
                 string constr = BiLin3D.Startup.Configuration.GetConnectionString("sql");
                 string sql = $@"
                     SELECT t1.[OrderID]
@@ -177,7 +177,7 @@ namespace Bilin3d.Modules {
                 }
 
                 return View["Wap/order", base.Model];
-            };
+            });
 
         }
     }
