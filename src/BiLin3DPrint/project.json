@@ -13,7 +13,7 @@
     "Nancy.Authentication.Forms": "2.0.0-clinteastwood",
     "Nancy.Validation.DataAnnotations": "2.0.0-clinteastwood",
     "Nancy.Viewengines.Razor":  "2.0.0-clinteastwood",
-    "ServiceStack.OrmLite.MySql": "4.5.4",
+    "ServiceStack.OrmLite.MySql": "4.0.42",
     "System.ComponentModel.Annotations": "4.1.0",
     "System.Data.Common": "4.3.0",
     "ThoughtWorks.QRCode": "1.1.0",
