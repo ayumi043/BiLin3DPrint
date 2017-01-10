@@ -1,5 +1,4 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
-@using Bilin3d.HtmlExtensions;
 @using System.Collections.Generic;
 
 <!DOCTYPE html>
@@ -50,7 +49,7 @@
         .order-splite{ border-bottom:1px dotted #e5e5e5;}
         .order-splite-no{border:0px;}
     </style>
-    <script src="/resource/vue/vue.js"></script>
+    <script src="/resource/vue/vue.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -187,10 +186,9 @@
     <script src="/resource/vux/dist/components/icon/index.js"></script>
     <script src="/resource/vux/dist/components/scroller/index.js"></script>
     <script src="/resource/vux/dist/components/loading/index.js"></script>
-    <script src="/resource/vux/dist/components/tip/index.js"></script>
 
     <script src="/resource/fastclick/lib/fastclick.js"></script>
-    <script src="/resource/jquery/dist/jquery.js"></script>
+    <script src="/resource/jquery/dist/jquery.min.js"></script>
 
     <script>
         FastClick.attach(document.body);
@@ -236,8 +234,8 @@
                 showTab: function (val) {
                     this.vs = val;
                 },
-                getData: function () {
-                    $.get("./order/" + this.userid, function (data) {
+                getData: function (userid) {
+                    $.get("./order/" + userid, function (data) {
                         $.each(data, function (index, value) {
                             if (value.state === '1') {
                                 vm.orders1 = value.orders;
@@ -261,25 +259,7 @@
                     $.post("./bindaccountwx/" + this.openid, { username: this.username, pwd: this.pwd }, function (data) {
                         vm.bandingshow = false;
                         loadingshow = true;
-                        $.get("./order/" + data.userid, function (data) {
-                            $.each(data, function (index, value) {
-                                if (value.state === '1') {
-                                    vm.orders1 = value.orders;
-                                }
-                                if (value.state === '2') {
-                                    vm.orders2 = value.orders;
-                                }
-                                if (value.state === '5') {
-                                    vm.orders3 = value.orders;
-                                }
-                                if (value.state === '6') {
-                                    vm.orders4 = value.orders;
-                                }
-                                if (value.state === '7' || value.state === '8') {
-                                    vm.orders5 = value.orders;
-                                }
-                            });
-                        });
+                        vm.getData(data.userid);
                     });
                 }
             },
@@ -303,7 +283,7 @@
                 // });
 
                 if (this.userid != '') {
-                    this.getData();
+                    this.getData(this.userid);
                 }
             },
             created: function () {
@@ -313,7 +293,7 @@
                     if (i === 120) {
                         window.clearInterval(int);
                     }
-                    vm.getData();
+                    vm.getData(vm.userid);
                 }, 3000);
             }
 

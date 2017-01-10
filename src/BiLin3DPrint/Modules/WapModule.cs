@@ -12,6 +12,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
 using ThoughtWorks.QRCode.Codec;
+using System.Text;
 
 namespace Bilin3d.Modules {
     public class WapModule : BaseModule {
@@ -29,8 +30,21 @@ namespace Bilin3d.Modules {
             Get("/myorder", _ => {
                 string code = Request.Query["code"];
                 string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
-                WebClient wc = new WebClient();
-                string json = wc.DownloadString(url);
+                
+                //WebClient wc = new WebClient();                
+                //string json = wc.DownloadString(url);
+
+                //这里容易超时，用WebClient不能设置超时
+                WebRequest request = WebRequest.Create(url);
+                request.Timeout = 1000 * 60;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream stream = response.GetResponseStream();
+                string json = "";
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)){
+                    json = reader.ReadToEnd();
+                    reader.Close();
+                }                    
+
                 JObject m = JObject.Parse(json);
                 if (m["errcode"] != null) {
                     throw new System.Exception("获取微信openid发生错误:" + json);
