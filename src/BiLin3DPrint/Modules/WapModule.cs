@@ -30,12 +30,14 @@ namespace Bilin3d.Modules {
             Get("/myorder", _ => {
                 string code = Request.Query["code"];
                 string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
-                
+
                 //WebClient wc = new WebClient();                
                 //string json = wc.DownloadString(url);
 
                 //这里容易超时，用WebClient不能设置超时
-                WebRequest request = WebRequest.Create(url);
+                //ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                WebRequest request = WebRequest.Create(url);               
                 request.Timeout = 1000 * 60;
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 Stream stream = response.GetResponseStream();
