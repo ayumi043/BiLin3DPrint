@@ -49,7 +49,7 @@
         .order-splite{ border-bottom:1px dotted #e5e5e5;}
         .order-splite-no{border:0px;}
     </style>
-    <script src="/resource/vue/vue.min.js"></script>
+    <script src="http://cdn.bootcss.com/vue/1.0.28/vue.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -187,12 +187,9 @@
     <script src="/resource/vux/dist/components/scroller/index.js"></script>
     <script src="/resource/vux/dist/components/loading/index.js"></script>
 
-    <script src="/resource/fastclick/lib/fastclick.js"></script>
-    <script src="/resource/jquery/dist/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
 
-    <script>
-        FastClick.attach(document.body);
-
+    <script>        
         // register components
         Vue.component('group', vuxGroup);
         Vue.component('cell', vuxCell);
@@ -299,5 +296,13 @@
 
         });
     </script>    
+
+    <!-- fastclick -->
+    <script src="http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          FastClick.attach(document.body)
+        }, false)
+    </script>
 </body>
 </html>
