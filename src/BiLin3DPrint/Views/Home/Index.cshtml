@@ -12,3 +12,19 @@
     @Html.Partial("_IndexBlock.cshtml")
 }
 
+@section Javascript {
+    <script>
+        $(function () {
+            $("#map").click(function () {
+                map.enableScrollWheelZoom();
+            });
+            $("body").click(function (e) {
+                var $target = $(e.target);             
+                if ($target.parents("#map").length > 0) {                   
+                    return;
+                }
+                map.disableScrollWheelZoom();
+            });           
+        });
+    </script> 
+}
