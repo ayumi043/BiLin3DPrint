@@ -83,7 +83,6 @@ namespace Bilin3d.Modules {
                         and t2.MaterialId=@MaterialId and t1.state='0'
                     Group by t1.supplierId,t1.fname,address,tel,qq,logo;";
                 var suppliers = db.Select<SupplierWithCompletePriceModel>(sql, new { MaterialId = materialid });
-                log.Debug($"suppliers:{suppliers.Count}");
                 return Response.AsJson(suppliers.Select(i => new {
                     supplierId = i.SupplierId,
                     fname = i.Fname,
