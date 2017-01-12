@@ -21,7 +21,7 @@ namespace Bilin3d {
             #if DEBUG
                 environment.Views(runtimeViewUpdates: true); 
                 environment.Tracing(enabled: false, displayErrorTraces: true);
-            #endif
+            #endif           
         }
 
         protected override void ConfigureConventions(NancyConventions conventions) {

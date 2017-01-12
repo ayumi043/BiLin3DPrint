@@ -38,7 +38,7 @@ namespace Bilin3d.Modules {
                 //ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 WebRequest request = WebRequest.Create(url);               
-                request.Timeout = 1000 * 60;
+                request.Timeout = 1000 * 90;
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 Stream stream = response.GetResponseStream();
                 string json = "";

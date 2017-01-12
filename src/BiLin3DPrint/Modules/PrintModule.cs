@@ -14,9 +14,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Bilin3d.Modules {
     public class PrintModule : BaseModule {
-        public PrintModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) : base("/print") {
+        public PrintModule(IDbConnection db, ILog log, IRootPathProvider pathProvider) 
+            : base("/print") {
 
-            Get("/",parameters => {
+            Get("/", parameters => {
                 base.Page.Title = "3D打印";
                 return View["Index", base.Model];
             });
@@ -29,7 +30,75 @@ namespace Bilin3d.Modules {
                 //}));
             });
 
-            Post("/upload",parameters => {
+            Get("/suppliers", parameters => { 
+                string materialid = Request.Query.materialid;
+                string _distance = Request.Query["distance"];
+                double distance = 20000;
+                if (_distance != null) {
+                    bool b = double.TryParse(_distance, out distance);
+                    if (!b) distance = 20000;
+                }
+                double lng = 0;
+                double lat = 0;
+
+                string url = $"http://api.map.baidu.com/location/ip?ak=26904d2efeb684d7d59d493098e7295d&ip={Request.UserHostAddress}&coor=bd09ll";
+
+                //WebClient wc = new WebClient();
+                //wc.Encoding = Encoding.UTF8;
+                //string json = wc.DownloadString(url);
+
+                WebRequest request = WebRequest.Create(url);
+                request.Timeout = 1000 * 90;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream stream = response.GetResponseStream();
+                string json = "";
+                using (StreamReader reader = new StreamReader(stream, Encoding.GetEncoding("utf-8"))) {
+                    json = reader.ReadToEnd();
+                    reader.Close();
+                }
+
+                JObject m = JObject.Parse(json);
+                if (m["status"].ToString() == "0") {
+                    lng = double.Parse(m["content"]["point"]["x"].ToString()); //经度
+                    lat = double.Parse(m["content"]["point"]["y"].ToString()); //纬度
+                }
+
+                //lng = 118.645297;
+                //lat = 24.879442;
+
+                double range = 180 / Math.PI * distance / 6372.797; //distance代表距离，单位是km
+                double lngR = range / Math.Cos(lat * Math.PI / 180.0);
+                double maxLat = lat + range;
+                double minLat = lat - range;
+                double maxLng = lng + lngR;
+                double minLng = lng - lngR;
+
+                //暂时精确到供应商，不精确到供应商的打印机
+                string sql = $@"
+                    SELECT t1.supplierId,t1.fname,address,tel,qq,logo,t2.Price as MatPrice,t3.fname as PrintCompleteName,t2.id as SupplierPrinterMaterialId
+                    FROM t_supplier t1
+                    join t_supplier_printer_material t2 on t2.supplierId=t1.supplierId
+                    join t_printcomplete t3 on t3.completeid=t2.completeid                
+                    WHERE ((lat BETWEEN '{minLat}' AND '{maxLat}') AND (lng BETWEEN '{minLng}' AND '{maxLng}'))
+                        and t2.MaterialId=@MaterialId and t1.state='0'
+                    Group by t1.supplierId,t1.fname,address,tel,qq,logo;";
+                var suppliers = db.Select<SupplierWithCompletePriceModel>(sql, new { MaterialId = materialid });
+                log.Debug($"suppliers:{suppliers.Count}");
+                return Response.AsJson(suppliers.Select(i => new {
+                    supplierId = i.SupplierId,
+                    fname = i.Fname,
+                    address = i.Address,
+                    tel = i.Tel,
+                    qq = i.QQ,
+                    logo = i.Logo,
+                    matprice = i.MatPrice,
+                    printcompletename = i.PrintCompleteName,
+                    supplierprintermaterialid = i.SupplierPrinterMaterialId
+                }));
+
+            });
+            
+            Post("/upload", parameters => {
                 string uploadDirectory;
                 string filepath = "";
                 if (Context.CurrentUser == null) {
@@ -110,60 +179,7 @@ namespace Bilin3d.Modules {
                 //base.Page.Title = "上传成功";
                 //return View["Index", base.Model];
             });
-
-            Get("/suppliers", parameters => {
-                string materialid = Request.Query["materialid"].Value;
-                string _distance = Request.Query["distance"].Value;
-                double distance = 20000;
-                if (_distance != null) {
-                    bool b = double.TryParse(_distance,out distance);
-                    if (!b) distance = 20000;                    
-                }                
-                double lng = 0, lat = 0;
-
-                string url = $"http://api.map.baidu.com/location/ip?ak=26904d2efeb684d7d59d493098e7295d&ip={Request.UserHostAddress}&coor=bd09ll";
-                WebClient wc = new WebClient();
-                wc.Encoding = Encoding.UTF8;
-                string json = wc.DownloadString(url);
-                JObject m = JObject.Parse(json);
-                if (m["status"].ToString() == "0") {
-                    lng = double.Parse(m["point"]["x"].ToString()); //经度
-                    lat = double.Parse(m["point"]["y"].ToString()); //纬度
-                }
-
-                //lng = 118.645297;
-                //lat = 24.879442;
-
-                double range = 180 / Math.PI * distance / 6372.797; //distance代表距离，单位是km
-                double lngR = range / Math.Cos(lat * Math.PI / 180.0);
-                double maxLat = lat + range;
-                double minLat = lat - range;
-                double maxLng = lng + lngR;
-                double minLng = lng - lngR;
-
-                //暂时精确到供应商，不精确到供应商的打印机
-                string sql = $@"
-                    SELECT t1.supplierId,t1.fname,address,tel,qq,logo,t2.Price as MatPrice,t3.fname as PrintCompleteName,t2.id as SupplierPrinterMaterialId
-                    FROM t_supplier t1
-                    join t_supplier_printer_material t2 on t2.supplierId=t1.supplierId
-                    join t_printcomplete t3 on t3.completeid=t2.completeid                
-                    WHERE ((lat BETWEEN '{minLat}' AND '{maxLat}') AND (lng BETWEEN '{minLng}' AND '{maxLng}'))
-                        and t2.MaterialId=@MaterialId and t1.state='0'
-                    Group by t1.supplierId,t1.fname,address,tel,qq,logo;";
-                var suppliers = db.Select<SupplierWithCompletePriceModel>(sql, new { MaterialId = materialid });
-                return Response.AsJson(suppliers.Select(i => new {
-                    supplierId = i.SupplierId,
-                    fname = i.Fname,
-                    address = i.Address,
-                    tel = i.Tel,
-                    qq = i.QQ,
-                    logo = i.Logo,
-                    matprice = i.MatPrice,
-                    printcompletename = i.PrintCompleteName,
-                    supplierprintermaterialid =i.SupplierPrinterMaterialId
-                }));
-
-            });
+                        
         }
 
     }

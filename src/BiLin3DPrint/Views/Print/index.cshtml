@@ -29,7 +29,7 @@
         <div class="container"><a id="checkout" class="btn btn-u btn-u-lg pull-right" disabled="disabled">去购物车结算</a></div>
     </div>
 
-    <script src="http://cdn.bootcss.com/vue/1.0.28/vue.js"></script>
+    <script src="http://cdn.bootcss.com/vue/1.0.28/vue.min.js"></script>
     <script>
         var vm = new Vue({
             el: '#print',
@@ -284,32 +284,19 @@
             <tr class="active">
                 <td class="col-md-3">材料名</td>
                 <td>颜色</td>
-                <td>精度</td>
-                @*<td>预计交货时间</td>
-                <td>数量</td>*@
+                <td>精度</td>              
                 <td>密度(克/立方厘米)</td>
-                <td>操作</td>
-                @*<td class="col-md-1"></td>*@
+                <td>操作</td>               
             </tr>
-
             <tr class="cartr" v-bind:class="{'success':selectedMatIndex==index}"
                 v-for="(index,item) in matList
                             | filterBy material
                             | limitBy pageSize pageSize*curPageMat">
-                <td><a href="/material/{{item.materialId}}" target="_blank">{{item.name}}</a></td>
+                <td><a>{{item.name}}</a></td>
                 <td>{{item.color}}</td>
-                <td>{{item.accuracy}}</td>
-                @*<td>{{item.delivery}}</td>
-                <td>
-                    <div>
-                        <a class="prev">-</a>
-                        <input class="num" type="text" disabled="disabled" value="1">
-                        <a class="next">+</a>
-                    </div>
-                </td>*@
+                <td>{{item.accuracy}}</td>               
                 <td>{{item.density}}</td>
                 <td><button class="btn btn-u" type="button" v-on:click="gethubs(item.materialId,index,$event)">选择</button></td>
-                @*<td><button class="btn btn-u btn-brd btn-primary btn-sm add-car" type="button" disabled="disabled">加入购物车</button></td>*@
             </tr>
         </table>
         <nav style="border-top:1px solid #ddd;">
@@ -341,7 +328,7 @@
                                 | limitBy pageSize pageSize*curPageMat">
                 <td valign="top">
                     <img style="width:30px;height:30px;" 
-                     v-bind:src="item.logo==null ? 'item.logo' : 'item.logo'"></td>
+                     v-bind:src="item.logo==null ? '' : ''"></td>
                 <td style="text-align:left;">
                     <span style="font-weight:bold;">{{item.fname}}</span>
                 </td>
