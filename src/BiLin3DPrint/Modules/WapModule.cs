@@ -29,7 +29,7 @@ namespace Bilin3d.Modules {
 
             Get("/myorder", _ => {
                 string code = Request.Query["code"];
-                string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code}&grant_type=authorization_code";
+                string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={WxPayConfig.APPID}&secret={WxPayConfig.APPSECRET}&code={code.Trim()}&grant_type=authorization_code";
 
                 //WebClient wc = new WebClient();                
                 //string json = wc.DownloadString(url);
@@ -49,7 +49,7 @@ namespace Bilin3d.Modules {
 
                 JObject m = JObject.Parse(json);
                 if (m["errcode"] != null) {
-                    throw new System.Exception("获取微信openid发生错误:" + json);
+                    throw new System.Exception($"获取微信openid发生错误;json:{json};code:{code}");
                 }
                 string openid = m["openid"].ToString();
                 var userid = db.Single<string>($@"select id from t_user where WxOpenid='{openid}';");
