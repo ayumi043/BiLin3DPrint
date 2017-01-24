@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System.IO;
 using ThoughtWorks.QRCode.Codec;
 using System.Text;
+using System;
 
 namespace Bilin3d.Modules {
     public class WapModule : BaseModule {
@@ -24,7 +25,7 @@ namespace Bilin3d.Modules {
             });
             
             Get("/order",  _ => {
-                return Response.AsRedirect($"https://open.weixin.qq.com/connect/oauth2/authorize?appid={WxPayConfig.APPID}&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fmyorder&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
+                return Response.AsRedirect($"https://open.weixin.qq.com/connect/oauth2/authorize?appid={WxPayConfig.APPID}&redirect_uri=http%3A%2F%2Fwww.3dworks.cn%2Fm%2Fmyorder&response_type=code&scope=snsapi_base&state={DateTime.Now.ToString("yyMMddhhmmssffffff")}&connect_redirect=1#wechat_redirect");
             });
 
             Get("/myorder", _ => {
